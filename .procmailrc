@@ -10,9 +10,13 @@ LOGFILE=$HOME/.procmaillog    # Keep a log for troubleshooting.
 :0Wc
 | /usr/bin/python /vagrant/parse.py	
 
-:0
+:0c
 | cat >> testfile
+
+:0c
+$DEFAULT
 }
 
-
+:0:
+unwanted
 
