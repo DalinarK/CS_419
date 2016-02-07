@@ -191,13 +191,3 @@ dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + ye
 # print dateString
 startDate = time.strptime(dateString, "%H %M %d %B %Y")
 print startDate.time()
-# full_msg = sys.stdin.readlines()
-
-# msg = email.message_from_string(full_msg.join());
-
-# to = msg['to']
-# fromHeader = msg['from']
-# subject = msg['subject']
-# body = msg['body']
-
-# fileStream.write(subject)
