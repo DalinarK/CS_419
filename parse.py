@@ -99,7 +99,7 @@ appointeeEmail = matchObject.group(1)
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Purpose: parse out the date and store it in the date variable
-# Variables created: date
+# Variables created: month (int), day (int), year(int)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 expressionObject = re.compile('Date: (.*)')
@@ -108,7 +108,7 @@ expressionObject = re.compile('\W+')
 nameLine = matchObject.group(1)
 dateList = expressionObject.split(nameLine)
 
-print dateList
+# print dateList
 month = dateList[1]
 year = dateList[3]
 day = dateList[2]
@@ -117,11 +117,80 @@ expressionObject = re.compile('\d*')
 matchObject = expressionObject.search(day)	
 day = matchObject.group()
 
-# construct date
-dateString = day + " " + month + " " + year
-print dateString
-date = time.strptime(dateString, "%d %B %Y")
-print date
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Purpose: parse out the start and end hours
+# Variables created: startHour (int) startMinute endHour (int) endMinute
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+expressionObject = re.compile('Time:\s+(\d*:\d*[p|m|a]+)\s+-\s+(\d*:\d*[p|m|a]+)')
+matchObject = expressionObject.search(inputVar)	
+startTime = matchObject.group(1)
+endTime = matchObject.group(2)
+
+# Get the hours for startTime
+# Check to see if the time is in PM and remove it + add 12 hours
+expressionObject = re.compile('pm')
+result = expressionObject.search(startTime)
+if (result != None) & (result.group() == 'pm'):
+	# remove the pm from startTime
+	print "found pm replacing"
+	startTime = expressionObject.sub("", startTime) 
+	# add 12 hours
+	expressionObject = re.compile('\d*')
+	matchObject =expressionObject.search(startTime)
+	startHour = matchObject.group()
+	startHour = int(startHour) + 12
+	startHour = str(startHour)
+# Check to see if the time is in AM and remove it
+expressionObject = re.compile('am')
+result = expressionObject.search(startTime)
+if (result != None) and (result.group() == 'am'):
+	# remove the pm from startTime
+	print "found am replacing"
+	startTime = expressionObject.sub("", startTime) 
+
+# Get the minutes startTime
+expressionObject = re.compile('(\d\d)')
+print startTime
+matchObject = expressionObject.search(startTime)
+startMinute = matchObject.group()
+
+# Get the hours for endTime
+# Check to see if the time is in PM and remove it + add 12 hours
+expressionObject = re.compile('pm')
+result = expressionObject.search(endTime)
+if (result != None) & (result.group() == 'pm'):
+	# remove the pm from endTime
+	print "found pm replacing"
+	endTime = expressionObject.sub("", endTime) 
+	# add 12 hours
+	expressionObject = re.compile('\d*')
+	matchObject =expressionObject.search(endTime)
+	endHour = matchObject.group()
+	endHour = int(endHour) + 12
+	endHour = str(endHour)
+# Check to see if the time is in AM and remove it
+expressionObject = re.compile('am')
+result = expressionObject.search(endTime)
+if (result != None) and (result.group() == 'am'):
+	# remove the pm from endTime
+	print "found am replacing"
+	endTime = expressionObject.sub("", endTime) 
+
+# Get the minutes endTime
+expressionObject = re.compile('(\d\d)')
+print endTime
+matchObject = expressionObject.search(endTime)
+endMinute = matchObject.group()
+
+print "start Hour: " + startHour + " start Minute: " + startMinute
+print "end Hour: " + endHour + " end Minute: " + endMinute
+
+# construct start date
+dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + year
+# print dateString
+startDate = time.strptime(dateString, "%H %M %d %B %Y")
+print startDate.time()
 # full_msg = sys.stdin.readlines()
 
 # msg = email.message_from_string(full_msg.join());
