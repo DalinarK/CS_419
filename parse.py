@@ -30,27 +30,30 @@ expressionObject = re.compile('Advising Signup with (.*)\sconfirmed')
 # nameLine variable
 matchObject = expressionObject.search(inputVar)
 nameLine = matchObject.group(1)
+print "filter pulled: " + nameLine
 # Creates second filter used to split up the names and executes split()
 expressionObject = re.compile('\W+')
 nameList = expressionObject.split(nameLine)
 
+print "length of nameList: " + str(len(nameList))
+
 if len(nameList) == 2:
 	# print "found two names"
-	advisorFirstName = nameList[0]
-	advisorLastName = nameList[1]
+	advisorFirstName = nameList[1]
+	advisorLastName = nameList[0]
 elif len(nameList) == 3:
 	# print "found three names"
-	advisorFirstName = nameList[0]
-	advisorLastName = nameList[1]
-	advisorMiddleName = nameList[2]
+	advisorFirstName = nameList[2]
+	advisorLastName = nameList[0]
+	advisorMiddleName = nameList[1]
 # If there are multiple names, only save the last name of the set
 else:
 	# print "found less than or more than one name"
-	advisorFirstName = nameList[0]
-	advisorLastName = nameList[-1]
+	advisorFirstName = nameList[-1]
+	advisorLastName = nameList[0]
 
-# print "first name: " + advisorFirstName
-# print "last naem: " + advisorLastName
+print "first name: " + advisorFirstName
+print "last name: " + advisorLastName
 # if len(nameList) == 3:
 # 	print "middle name: " + advisorMiddleName
 
@@ -190,4 +193,4 @@ print "end Hour: " + endHour + " end Minute: " + endMinute
 dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + year
 # print dateString
 startDate = time.strptime(dateString, "%H %M %d %B %Y")
-print startDate.time()
+print dateString
