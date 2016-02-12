@@ -1,6 +1,6 @@
 import sys
 import re
-import time
+import datetime
 
 print("Starting python script")
 # fileStream = open("pythoncreatedfile", 'w')
@@ -192,5 +192,5 @@ print "end Hour: " + endHour + " end Minute: " + endMinute
 # construct start date
 dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + year
 # print dateString
-startDate = time.strptime(dateString, "%H %M %d %B %Y")
-print dateString
+startDate = datetime.datetime.strptime(dateString, "%H %M %d %B %Y")
+print startDate.strftime('%H %M %d %B %Y')
