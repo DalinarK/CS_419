@@ -2,3 +2,5 @@ Testing  idea: make sure that all names are read in no matter how many words
 
 Storing first and last name with optional middle name
 testing AM or pm
+
+Test to make sure names with and without middle name work for both advisor and appointee

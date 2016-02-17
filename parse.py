@@ -1,7 +1,7 @@
 import sys
 import re
 import datetime
-import MySQLdb
+import sqlite3 as lite
 
 print("Starting python script")
 # fileStream = open("pythoncreatedfile", 'w')
@@ -22,6 +22,7 @@ inputVar = sys.stdin.read()
 # 	advisorFirstName
 # 	advisorLastName
 # 	[advisorMiddleName]
+# 	advisorEmail
 # Notes: When performing any operation, make sure that advisorMiddleName actually exists
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
@@ -42,6 +43,7 @@ if len(nameList) == 2:
 	# print "found two names"
 	advisorFirstName = nameList[1]
 	advisorLastName = nameList[0]
+	advisorMiddleName = None
 elif len(nameList) == 3:
 	# print "found three names"
 	advisorFirstName = nameList[2]
@@ -55,8 +57,15 @@ else:
 
 print "first name: " + advisorFirstName
 print "last name: " + advisorLastName
-# if len(nameList) == 3:
-# 	print "middle name: " + advisorMiddleName
+if len(nameList) == 3:
+	print "middle name: " + advisorMiddleName
+
+# finds the advisor's email
+expressionObject = re.compile('oregonstate.edu,.*<(.*)>')
+matchObject = expressionObject.search(inputVar)
+nameLine = matchObject.group(1)
+print "advisor email: " + nameLine
+advisorEmail = nameLine
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #Purpose: Find name of appointment maker
@@ -80,6 +89,7 @@ nameList = expressionObject.split(nameLine)
 if len(nameList) == 2:
 	appointeeFirstName = nameList[0]
 	appointeeLastName = nameList[1]
+	appointeeMiddleName = None
 elif len(nameList) == 3:
 	appointeeFirstName = nameList[0]
 	appointeeLastName = nameList[1]
@@ -89,10 +99,10 @@ else:
 	appointeeFirstName = nameList[0]
 	appointeeLastName = nameList[-1]
 
-# print "first name: " + appointeeFirstName
-# print "last naem: " + appointeeLastName
-# if len(nameList) == 3:
-# 	print "middle name: " + appointeeMiddleName
+print "first name: " + appointeeFirstName
+print "last naem: " + appointeeLastName
+if len(nameList) == 3:
+	print "middle name: " + appointeeMiddleName
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Purpose: parse out the user's email
@@ -106,7 +116,7 @@ appointeeEmail = matchObject.group(1)
 # Variables created: month (int), day (int), year(int)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-expressionObject = re.compile('Date: (.*)')
+expressionObject = re.compile('Date: (.*,.*,.*)')
 matchObject = expressionObject.search(inputVar)	
 expressionObject = re.compile('\W+')
 nameLine = matchObject.group(1)
@@ -196,9 +206,48 @@ dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + ye
 startDate = datetime.datetime.strptime(dateString, "%H %M %d %B %Y")
 print startDate.strftime('%H %M %d %B %Y')
 
-# http://www.tutorialspoint.com/python/python_database_access.htm
-# Open database connection
-db = MySQLdb.connect("oniddb.cws.oregonstate.edu","dinhd-db","QbppENycrsEikPD3","dinhd-db")
 
-# prepare a cursor object using cursor() method
-cursor = db.cursor()
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Purpose: Checks to make sure that the advisor and the appointee exist in the DB. 
+# If not, they will be added to the student and appointment tables. 
+# Uses variables: advisorFirstName, advisorLastName, advisorMiddleName, advisor 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+con = lite.connect('appt.db')
+
+advisors = (
+    ('Kevin', 'McGrath', 'D', 'dmcgrath@eecs.oregonstate.edu'),
+)
+
+with con:
+	cur = con.cursor() 
+	cur.execute("PRAGMA foreign_keys = 1")
+
+	# Check to see if advisor exists in system get their ID key
+	cur.execute("SELECT advisor_id, email_address FROM advisor WHERE email_address = " + "'" + advisorEmail +"'")
+	rows = cur.fetchone()
+
+	# Retrieve the advisor's ID
+	# If not then add them to the system.
+	if rows:
+		advisorId = rows[0]
+		print advisorId
+	else:
+		print "Advisor does not exist. Adding Advisor!"
+		cur.execute ("INSERT INTO advisor (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (advisorFirstName, advisorLastName, advisorMiddleName, advisorEmail))
+
+	# Check to see if student exists in system get their ID key
+	cur.execute("SELECT student_id, email_address FROM student WHERE email_address = " + "'" + appointeeEmail +"'")
+	rows = cur.fetchone()
+
+	# Retrieve the student's ID
+	# If not the add them tot he system
+	if rows:
+		studentId = rows[0]
+		print studentId
+	else:
+		print "Student does not exist. Adding Student!"
+		cur.execute ("INSERT INTO student (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (appointeeFirstName, appointeeLastName, appointeeMiddleName, appointeeEmail))
+
+
+
+
