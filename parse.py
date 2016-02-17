@@ -1,6 +1,7 @@
 import sys
 import re
 import datetime
+import MySQLdb
 
 print("Starting python script")
 # fileStream = open("pythoncreatedfile", 'w')
@@ -194,3 +195,10 @@ dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + ye
 # print dateString
 startDate = datetime.datetime.strptime(dateString, "%H %M %d %B %Y")
 print startDate.strftime('%H %M %d %B %Y')
+
+# http://www.tutorialspoint.com/python/python_database_access.htm
+# Open database connection
+db = MySQLdb.connect("oniddb.cws.oregonstate.edu","dinhd-db","QbppENycrsEikPD3","dinhd-db")
+
+# prepare a cursor object using cursor() method
+cursor = db.cursor()
