@@ -1,7 +1,7 @@
 #
 #             Author: Michael Marven
 #       Date Created: 02/17/16
-# Last Date Modified: 02/17/16
+# Last Date Modified: 02/18/16
 #          File Name: appt_email.py
 #           Overview: A module with classes and functions to send emails and
 #                     calendar appointments 
@@ -88,7 +88,7 @@ class CalAppt(EmailMsg):
     
     # Class constructor
     def __init__(self, fromaddr, toaddr, srvadd, port, pwd):
-        EmailMsg.__init__(self, fromaddr, toaddr, srvadd, port, pwd):
+        EmailMsg.__init__(self, fromaddr, toaddr, srvadd, port, pwd)
         self.fromaddr = fromaddr
         self.toaddr = toaddr
         self.srvadd = srvadd
@@ -118,36 +118,36 @@ class CalAppt(EmailMsg):
         # TODO: Write function to convert date/time; Dates passed to function
         # should be hard coded strings for testing
         # TODO: UID should be a unique id that is generated; Hard coded for test
-        def __calContent = ("BEGIN:VCALENDAR\n"
-                            "METHOD:REQUEST\n"
-                            "PRODID: BCP - Meeting\n"
-                            "VERSION:2.0\n"
-                            "BEGIN:VEVENT\n"
-                            "DTSTAMP:" + start + "\n"
-                            "DTSTART:" + start + "\n"
-                            "DTEND:" + end + "\n"
-                            "SUMMARY:" + self.subj + "\n"
-                            "UID:324\n"
-                            "ATTENDEE;"
-                            "ROLE=REQ-PARTICIPANT;"
-                            "PARTSTAT=NEEDS-ACTION;"
-                            "RSVP=TRUE:MAILTO:" + student_email + "\n"
-                            "ORGANIZER:MAILTO:" + student_email + "\n"
-                            "LOCATION:OSU Office\n" +
-                            "DESCRIPTION:" + self.body + "\n"
-                            "SEQUENCE:0\n"
-                            "PRIORITY:5\n"
-                            "CLASS:PUBLIC\n"
-                            "STATUS:CONFIRMED\n"
-                            "TRANSP:OPAQUE\n"
-                            "BEGIN:VALARM\n"
-                            "ACTION:DISPLAY\n"
-                            "DESCRIPTION:REMINDER\n"
-                            "TRIGGER;RELATED=START:-PT00H15M00S\n"
-                            "END:VALARM\n"
-                            "END:VEVENT\n"
-                            "END:VCALENDAR"
-                           )
+        __calContent = ("BEGIN:VCALENDAR\n"
+                        "METHOD:REQUEST\n"
+                        "PRODID: BCP - Meeting\n"
+                        "VERSION:2.0\n"
+                        "BEGIN:VEVENT\n"
+                        "DTSTAMP:" + start + "\n"
+                        "DTSTART:" + start + "\n"
+                        "DTEND:" + end + "\n"
+                        "SUMMARY:" + subj + "\n"
+                        "UID:324\n"
+                        "ATTENDEE;"
+                        "ROLE=REQ-PARTICIPANT;"
+                        "PARTSTAT=NEEDS-ACTION;"
+                        "RSVP=TRUE:MAILTO:" + student_email + "\n"
+                        "ORGANIZER:MAILTO:" + student_email + "\n"
+                        "LOCATION:OSU Office\n" +
+                        "DESCRIPTION:" + body + "\n"
+                        "SEQUENCE:0\n"
+                        "PRIORITY:5\n"
+                        "CLASS:PUBLIC\n"
+                        "STATUS:CONFIRMED\n"
+                        "TRANSP:OPAQUE\n"
+                        "BEGIN:VALARM\n"
+                        "ACTION:DISPLAY\n"
+                        "DESCRIPTION:REMINDER\n"
+                        "TRIGGER;RELATED=START:-PT00H15M00S\n"
+                        "END:VALARM\n"
+                        "END:VEVENT\n"
+                        "END:VCALENDAR"
+                       )
                            
         # Build email
         msg = MIMEMultipart("alternative")
@@ -157,7 +157,7 @@ class CalAppt(EmailMsg):
         msg["Content-class"] = "urn:content-classes:calendarmessage"
         
         # Build first MIME body part with simple text description of appt
-        msg.attach(MIMEText(self.body))
+        msg.attach(MIMEText(body))
         
         # Build second MIME body part with iCal information
         part = MIMEBase('text', "calendar", method="REQUEST")
