@@ -13,7 +13,7 @@
 #
 #
 
-from appt_email import TestEmail
+from appt_email import EmailMsg
 
 # Declare variables
 from_addr = "oriontest.bugbounty@gmail.com"
@@ -25,13 +25,13 @@ email_pwd = "QQQSpurt01SheetLOGAN01Tete" # TODO: Move this to config.py module
 email_subj = "Test of new Python script for sending email"
 email_body = "This is a new test"
 
-# Create TestEmail object
+# Create EmailMsg object
 
-test1 = TestEmail(from_addr, to_addr, server, server_port, email_pwd)
+test1 = EmailMsg(from_addr, to_addr, server, server_port, email_pwd)
 
 # Send email
 
-test1.sendTestEmail(email_subj, email_body)
+test1.sendEmail(email_subj, email_body)
 
 # Print confirmation
 
