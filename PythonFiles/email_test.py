@@ -16,11 +16,11 @@
 from appt_email import EmailMsg
 
 # Declare variables
-from_addr = "oriontest.bugbounty@gmail.com"
-to_addr = "mmarven09@gmail.com"
+from_addr = "EMAIL ADDRESS"
+to_addr = "EMAIL ADDRESS"
 server = 'smtp.gmail.com'
 server_port = 587
-email_pwd = "QQQSpurt01SheetLOGAN01Tete" # TODO: Move this to config.py module
+email_pwd = "EMAIL PASSWORD" # TODO: Move this to config.py module
 
 email_subj = "Test of new Python script for sending email"
 email_body = "This is a new test"
