@@ -16,11 +16,11 @@
 from appt_email import CalAppt
 
 # Declare variables
-from_addr = "oriontest.bugbounty@gmail.com"
-to_addr = "mmarven09@gmail.com"
+from_addr = "EMAIL ADDRESS"
+to_addr = "EMAIL ADDRESS"
 server = 'smtp.gmail.com'
 server_port = 587
-email_pwd = "QQQSpurt01SheetLOGAN01Tete" # TODO: Move this to config.py module
+email_pwd = "FROM EMAIL PASSWORD" # TODO: Move this to config.py module
 
 email_subj = "Advising Signup with McGrath, D Kevin confirmed for REDACTED"
 email_body = ("Advising Signup with McGrath, D Kevin confirmed\n"
