@@ -226,7 +226,8 @@ def print_cal(cal_win, cal_highlight):
     # Print month, day, year heading, centered
     mvwaddstr(cal_win, 0, (cal_win.getmaxyx()[1]/2 - len(calhead)/2), calhead)
 
-    # Generate a colleciton of week arrays for the month and year
+    # Generate a collection of week arrays for the month and year
+    calendar.setfirstweekday(calendar.SUNDAY)
     cal = calendar.monthcalendar(cal_highlight['year'], cal_highlight['month'])
 
     # Build the new calendar
