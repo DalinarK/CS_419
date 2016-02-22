@@ -324,7 +324,7 @@ def nav_cal(cal_win):
                 cal_highlight['month'] = 12
                 cal_highlight['year'] -= 1
 
-            print_cal(cal_win, cal_highlight)
+            last_day = print_cal(cal_win, cal_highlight)
 
         # NAVIGATION: DOWN
         # If cursor DOWN arrow or j (ASCII code 106)...
@@ -335,7 +335,7 @@ def nav_cal(cal_win):
                 cal_highlight['month'] = 1
                 cal_highlight['year'] += 1
 
-            print_cal(cal_win, cal_highlight)
+            last_day = print_cal(cal_win, cal_highlight)
 
         # NAVIGATION: LEFT
         # If cursor LEFT arrow or h (ASCII code 104)...

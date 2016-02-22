@@ -86,7 +86,7 @@ def main():
     popup_outline_win = gen_popup_outline_window(max_y, max_x, cal_title, help_str)
 
     # Create the Calendar "container" window. 
-    cal_win = newwin(7, 20, popup_outline_win.getbegyx()[0]+2, popup_outline_win.getbegyx()[1]+4)
+    cal_win = newwin(8, 20, popup_outline_win.getbegyx()[0]+2, popup_outline_win.getbegyx()[1]+4)
     keypad(cal_win, True)  
 
     # Create the Confirmation "container" window. 
