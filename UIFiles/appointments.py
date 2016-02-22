@@ -16,43 +16,23 @@
 from functions import *
 from unicurses import *
 
-# An array of choices for testing purposes...
-# Keep this global ONLY FOR TESTING PURPOSES!
-# TODO: Get rid of this!
-menu_items = [
-        "7:00 am - Bill Gates",
-        "7:20 am - Lady Gaga",
-        "7:40 am - Alfred Hitchcock",
-        "8:00 am - Bernie Sanders",
-        "8:20 am - Mary Queen of Scots",
-        "8:40 am - Stephen King",
-        "9:00 am - Barack Obama",
-        "9:20 am - Lady Gaga",
-        "9:40 am - Jackie Chan",
-        "10:00 am - Kate Middleton",
-        "10:20 am - Chris Christie",
-        "10:40 am - Idris Elba",
-        "11:00 am - Mary Queen of Scots",
-        "11:20 am - Hillary Clinton",
-        "11:40 am - Bill Gates",
-        "12:00 pm - Bernie Sanders",
-        "12:20 pm - Lady Gaga",
-        "12:40 pm - Alfred Hitchcock",
-        "1:00 pm - Bernie Sanders",
-        "1:20 pm - Mary Queen of Scots",
-        "1:40 pm - Stephen King",
-        "2:00 pm - Barack Obama",
-        "2:20 pm - Lady Gaga",
-        "2:40 pm - Jackie Chan",
-        "3:00 pm - Kate Middleton",
-        "3:20 pm - Chris Christie",
-        "3:40 pm - Idris Elba",
-        "4:00 pm - Mary Queen of Scots",
-        "4:20 pm - Hillary Clinton",
-        "4:40 pm - Chris Rock" ]
-
 
 def main():
+
+    # Holds data about the appointment list. This dictionary is mutable so
+    # it should not be necessary to make this global to "share" it.
+    list_info = {
+        'highlight': 0,         # highlighted line in list view
+        'view_height': 0,       # number of lines in list view
+        'max_y': 0,             # max height of list window
+        'max_x': 0,             # max width of list window
+        'highlight_offset': 0,  # offset from beg. of list to highlight
+        'highlight_limit': 0,   # highest line number that's highlightable
+        'start': 0,             # start of "window" of appts to show
+        'end': 0,               # end of "window" of appts to show
+        'n_items': 0            # number of items in appt list
+        }
+
 
     ##############################################
     # Set up stdscr and base curses settings
@@ -68,7 +48,6 @@ def main():
     use_default_colors()   # like the function says
     curs_set(False)        # no blinking cursor
     keypad(stdscr, True)   # keyboard support
-    highlight    = 1       # default highlighted line in list
     choice       = 0       # ENTER choice
     c            = 0       # character input
     max_y, max_x = stdscr.getmaxyx() # Y,X limits of term window
@@ -79,8 +58,9 @@ def main():
     init_pair(3, COLOR_GREEN, -1)
 
     # Get the list of appointments
-    # TODO: This function will get appointments from the database
-    #menu_items = get_appts()
+    # TODO: This function will eventually get appointments from the
+    # database. For now, get_appts() just returns a sample listing.
+    menu_items = get_appts()
 
 
     ##############################################
@@ -128,29 +108,14 @@ def main():
     # Set up the geometry/sizing of the appt. list
     ##############################################
 
-    # How many items are in the appointments array
-    n_items = len(menu_items)
+    reset_list(list_info, menu_items, list_win)
 
-    # How many lines we have to display appointments
-    list_view_height = list_win.getmaxyx()[0]  - 1
 
-    # Difference between highlight and underlying appointment index
-    list_highlight_offset = 0
-
-    # Last viewable line allowed to be highlighted
-    list_highlight_limit = 0
-
-    # Determine range of appointments to display initially
-    list_start = 0
-    if list_view_height > n_items:
-        list_end = n_items
-        list_highlight_limit = n_items
-    else:
-        list_end = list_view_height
-        list_highlight_limit = list_view_height
-
+    ##################################################
     # Generate and send the first list of appointments
-    print_list(list_win, menu_items, highlight, list_start, list_end)
+    ##################################################
+
+    print_list(list_win, menu_items, list_info)
 
 
     ##############################################
@@ -165,9 +130,16 @@ def main():
     # scrolling, when really all it's doing is changing which N-items are
     # going to display in the list (there is no full-list scrolling behind
     # the viewport, in other words).
+
+    # IMPORTANT: Don't re-query the database when scrolling! Only do it
+    # when an appointment is deleted or when a new calendar day is selected.
     
     running = True
     while(running):
+
+        # Flags whether or not we need to get a fresh appointment list
+        rescan = False
+
         # Read keyboard input in the list window, not stdscr!
         c = wgetch(list_win)
 
@@ -176,33 +148,33 @@ def main():
         if c == KEY_UP or c == 107:
             # Note: highlight != appointment array index! It only
             # refers to the line in the UI that is highlighted.
-            if highlight == 1:
+            if list_info['highlight'] == 1:
                 # top-most appointment is highlighted...
-                if list_start > 0:
+                if list_info['start'] > 0:
                     # highlighted appointment isn't the first...
-                    list_start -= 1
-                    list_end -= 1
-                    list_highlight_offset -= 1
+                    list_info['start'] -= 1
+                    list_info['end'] -= 1
+                    list_info['highlight_offset'] -= 1
                 # else: 
                 #     do nothing
             else:
-                highlight -= 1
+                list_info['highlight'] -= 1
 
 
         # NAVIGATION: DOWN
         # If cursor DOWN arrow or j (ASCII code 106)...
         elif c == KEY_DOWN or c == 106:
-            if highlight == list_highlight_limit:
+            if list_info['highlight'] == list_info['highlight_limit']:
                 # bottom-most appointment is highlighted...
-                if list_end < n_items:
+                if list_info['end'] < list_info['n_items']:
                     # highlighted appointment isn't the last...
-                    list_start += 1
-                    list_end += 1
-                    list_highlight_offset += 1
+                    list_info['start'] += 1
+                    list_info['end'] += 1
+                    list_info['highlight_offset'] += 1
                 # else: 
                 #     do nothing
             else:
-                highlight += 1
+                list_info['highlight'] += 1
 
 
         # OPERATION: CALENDAR
@@ -217,19 +189,25 @@ def main():
             help_str = " [t = today | q = quit] "
             popup_outline_win = gen_popup_outline_window(max_y, max_x, cal_title, help_str)
             wrefresh(popup_outline_win)
-            nav_cal(cal_win)
+            success = nav_cal(cal_win)
+
+            # If we got a new date, signal that a fresh appointment list
+            # is needed.
+            if success:
+                rescan = True
 
             # Update the list outline window with the new date.
             list_outline_win = gen_list_outline_window(max_y, max_x)
             wrefresh(list_outline_win)
 
+
         # OPERATION: DELETE APPOINTMENT
         # If user hits d or D (ASCII code 68 or 100)...
         elif c == 68 or c == 100:
-            if n_items >= 1:
-                choice = highlight + list_highlight_offset - 1
+            if list_info['n_items'] >= 1:
+                choice = list_info['highlight'] + list_info['highlight_offset'] - 1
 
-                # Display the choice in the footer window (for debugging)
+                # Process (delete) the appointment.
                 success = process_appt(max_y, max_x, cnf_win, menu_items, choice)
 
                 # If an appointment was deleted, start the listing over again.
@@ -237,28 +215,26 @@ def main():
                 # TODO: Put these settings in a dictionary and use a
                 # function to change them!
                 if success:
-                    highlight = 1
 
-                    # How many items are in the appointments array
-                    n_items = len(menu_items)
+                    # Note: This may not be necessary when the database is
+                    # connected. It is needed for debugging w/o the
+                    # database, though.
+                    reset_list(list_info, menu_items, list_win)
 
-                    # How many lines we have to display appointments
-                    list_view_height = list_win.getmaxyx()[0]  - 1
-
-                    # Reset diff. between highlight and underlying appointment index
-                    list_highlight_offset = 0
-
-                    # Reset last viewable line allowed to be highlighted
-                    list_highlight_limit = 0
-
-                    # Determine range of appointments to display initially
-                    list_start = 0
-                    if list_view_height > n_items:
-                        list_end = n_items
-                        list_highlight_limit = n_items
-                    else:
-                        list_end = list_view_height
-                        list_highlight_limit = list_view_height
+                    # FOR TESTING PURPOSES: Only rescan the appointment
+                    # list if we choose a different calendar date. Until
+                    # appointments are actually removed from an actual
+                    # database, rescanning the appointments will always
+                    # result in a full sample list of appointments. This
+                    # does us no favors during testing.
+                    #
+                    # For now, deleting appointments removes them from the
+                    # sample appointments in memory, then choosing a new
+                    # calendar date will rescan the sample appointments
+                    # list. At least it LOOKS correct.
+                      
+                    # Get a fresh set of appointments
+                    # rescan = True
 
 
         # OPERATION: QUIT
@@ -267,11 +243,18 @@ def main():
             running = False
 
         # Get the list of appointments
-        # TODO: This function will get appointments from the database
-        #menu_items = get_appts()
+        # TODO: This function will eventually get appointments from the
+        # database. For now, get_appts() just returns a sample listing.
+        if rescan: 
+
+            # Get a fresh set of appointments from the database
+            menu_items = get_appts()
+
+            # Reset the list window to defaults
+            reset_list(list_info, menu_items, list_win)
 
         # Print a fresh appointment listing
-        print_list(list_win, menu_items, highlight, list_start, list_end)
+        print_list(list_win, menu_items, list_info)
 
 
     # End curses

@@ -24,6 +24,41 @@ cal_selected = {
 
 
 #################################################
+# (Re)set settings for the appt list to defaults
+#################################################
+
+def reset_list(list_info, menu_items, list_win):
+
+    # Line to highlight in the list view
+    list_info['highlight'] = 1
+
+    # How many items are in the appointments array
+    list_info['n_items'] = len(menu_items)
+
+    # Get/store dimensions of list_win
+    list_info['max_y'] = list_win.getmaxyx()[0]
+    list_info['max_x'] = list_win.getmaxyx()[1]
+
+    # How many lines we have to display appointments
+    list_info['view_height'] = list_info['max_y'] - 1
+
+    # Difference between highlight and underlying appointment index
+    list_info['highlight_offset'] = 0
+
+    # Last viewable line allowed to be highlighted
+    list_info['highlight_limit'] = 0
+
+    # Determine range of appointments to display initially
+    list_info['start'] = 0
+    if list_info['view_height'] > list_info['n_items']:
+        list_info['end'] = list_info['n_items']
+        list_info['highlight_limit'] = list_info['n_items']
+    else:
+        list_info['end'] = list_info['view_height']
+        list_info['highlight_limit'] = list_info['view_height']
+
+
+#################################################
 # Get the list of appointments from the database
 #################################################
 
@@ -267,13 +302,16 @@ def nav_cal(cal_win):
     # Print the new calendar and grab the last day value
     last_day = print_cal(cal_win, cal_highlight)
 
-
     ################################################
     # Navigate the calendar
     ################################################
 
     browsing = True
     while(browsing):
+
+        # Flags whether or not we changed the date
+        success = False
+
         # Read keyboard input from the calendar window, not the list!
         c = wgetch(cal_win)
 
@@ -333,18 +371,21 @@ def nav_cal(cal_win):
             cal_selected['year']  = cal_highlight['year']
 
             browsing = False
+            success  = True
 
         # OPERATION: QUIT THE CALENDAR
         # If user hits q or Q (ASCII code 81 or 113) or ESC (ASCII code 27)...
         elif c == 81 or c == 113 or c == 27:
             browsing = False
 
+    return success
+
 
 ################################################
 # Print the appointment list
 ################################################
 
-def print_list(list_win, menu_items, highlight, list_start, list_end):
+def print_list(list_win, menu_items, list_info):
 
     # Clear out the list window
     werase(list_win)
@@ -355,8 +396,8 @@ def print_list(list_win, menu_items, highlight, list_start, list_end):
     # Keeps track of the row we're on
     list_win_y = 0
 
-    for i in range(list_start, list_end):
-        if(highlight == line_count):
+    for i in range(list_info['start'], list_info['end']):
+        if(list_info['highlight'] == line_count):
             # When we get to the highlight line, reverse it
             wattron(list_win, A_REVERSE)
             mvwaddstr(list_win, list_win_y, 0, menu_items[i])
