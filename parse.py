@@ -216,24 +216,30 @@ if result is not None:
 
 # Get the minutes endTime
 expressionObject = re.compile(':(\d\d)')
-print endTime
 matchObject = expressionObject.search(endTime)
-endMinute = matchObject.group()
+endMinute = matchObject.group(1)
 
 print "start Hour: " + startHour + " start Minute: " + startMinute
 print "end Hour: " + endHour + " end Minute: " + endMinute
 
 # construct start date
-dateString = startHour  + " " + startMinute + " " + day + " " + month + " " + year
-# print dateString
-startDate = datetime.datetime.strptime(dateString, "%H %M %d %B %Y")
+startDateString = startHour  + " " + startMinute + " " + day + " " + month + " " + year
+startDate = datetime.datetime.strptime(startDateString, "%H %M %d %B %Y")
+
+endDateString = endHour + " " + endMinute + " " + day + " " + month + " " + year
+endDate = datetime.datetime.strptime(endDateString, "%H %M %d %B %Y")
+
+startDateString = startDate.strftime('%H %M %d %B %Y')
+endDateString = endDate.strftime('%H %M %d %B %Y')
 print startDate.strftime('%H %M %d %B %Y')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Purpose: Checks to make sure that the advisor and the appointee exist in the DB. 
 # If not, they will be added to the student and appointment tables. 
-# Uses variables: advisorFirstName, advisorLastName, advisorMiddleName, advisor 
+# It will then add or remove an appointment based on the emailType variable.
+# Uses variables: advisorFirstName, advisorLastName, advisorMiddleName, appointeeFirstName, 
+# appointeeLastName, appointeeMiddleName, startDate, endDate 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 con = lite.connect('appt.db')
 
@@ -249,28 +255,48 @@ if emailType == 'confirmed':
 		rows = cur.fetchone()
 
 		# Retrieve the advisor's ID
-		# If not then add them to the system.
+		# If not then add them to the system then retrieve the new ID
 		if rows:
 			advisorId = rows[0]
 			print advisorId
 		else:
 			print "Advisor does not exist. Adding Advisor!"
 			cur.execute ("INSERT INTO advisor (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (advisorFirstName, advisorLastName, advisorMiddleName, advisorEmail))
-
+			cur.execute("SELECT advisor_id, email_address FROM advisor WHERE email_address = " + "'" + advisorEmail +"'")
+			rows = cur.fetchone()
+			advisorId = rows[0]
+			print "advisor ID: " + str(advisorId)
 		# Check to see if student exists in system get their ID key
 		cur.execute("SELECT student_id, email_address FROM student WHERE email_address = " + "'" + appointeeEmail +"'")
 		rows = cur.fetchone()
 
 		# Retrieve the student's ID
-		# If not the add them tot he system
+		# If not the add them to the system then retrieve the new ID
 		if rows:
 			studentId = rows[0]
 			print studentId
 		else:
 			print "Student does not exist. Adding Student!"
 			cur.execute ("INSERT INTO student (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (appointeeFirstName, appointeeLastName, appointeeMiddleName, appointeeEmail))
+			cur.execute("SELECT student_id, email_address FROM student WHERE email_address = " + "'" + appointeeEmail +"'")
+			rows = cur.fetchone()
+			studentId = rows[0]
+			print "student ID: " + str(studentId)
+		cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
 
-		cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end)
+if emailType == 'CANCELLED':
+	with con:
+		cur = con.cursor() 
+		cur.execute("PRAGMA foreign_keys = 1")
 
+		print "Removing Appointments"
+		cur.execute("SELECT id, date_time_start, date_time_end FROM appointment WHERE date_time_start = " + "'" + startDateString +"'")
+		rows = cur.fetchone()
 
+		if rows:
+			appointmentID = rows[0]
+			print "Removing id " + str(appointmentID)
+			cur.execute("DELETE FROM appointment WHERE id = " + "'" + str(appointmentID) + "'")
 
+		else:
+			print "No appointment in database!"
