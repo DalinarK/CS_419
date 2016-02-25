@@ -27,12 +27,14 @@ inputVar = sys.stdin.read()
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 # Creates the filter
-expressionObject = re.compile('Advising Signup with (.*)\sconfirmed')
+expressionObject = re.compile('Advising Signup with (.*)\s(confirmed|CANCELLED)')
 # Executes the filter on inputVar and stores it in object matchObject then stores the result into 
 # nameLine variable
 matchObject = expressionObject.search(inputVar)
 nameLine = matchObject.group(1)
 print "filter pulled: " + nameLine
+emailType = matchObject.group(2)
+print "email type: " + emailType
 # Creates second filter used to split up the names and executes split()
 expressionObject = re.compile('\W+')
 nameList = expressionObject.split(nameLine)
@@ -61,7 +63,7 @@ if len(nameList) == 3:
 	print "middle name: " + advisorMiddleName
 
 # finds the advisor's email
-expressionObject = re.compile('oregonstate.edu,.*<(.*)>')
+expressionObject = re.compile('Delivered-To: (.*)')
 matchObject = expressionObject.search(inputVar)
 nameLine = matchObject.group(1)
 print "advisor email: " + nameLine
@@ -81,26 +83,29 @@ advisorEmail = nameLine
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 expressionObject = re.compile('Name: (.*)')
-matchObject = expressionObject.search(inputVar)	
-expressionObject = re.compile('\W+')
+matchObject = expressionObject.search(inputVar)
 nameLine = matchObject.group(1)
+print "filter pulled: " + nameLine	
+expressionObject = re.compile('\W+')
 nameList = expressionObject.split(nameLine)
+print "name length is " + str(len(nameList))
 
 if len(nameList) == 2:
-	appointeeFirstName = nameList[0]
-	appointeeLastName = nameList[1]
+	appointeeFirstName = nameList[1]
+	appointeeLastName = nameList[0]
 	appointeeMiddleName = None
 elif len(nameList) == 3:
-	appointeeFirstName = nameList[0]
-	appointeeLastName = nameList[1]
-	appointeeMiddleName = nameList[2]
+	appointeeFirstName = nameList[2]
+	appointeeLastName = nameList[0]
+	appointeeMiddleName = nameList[1]
 # If there are multiple names, only save the last name of the set
 else:
+	print "name length not 3 or 2"
 	appointeeFirstName = nameList[0]
 	appointeeLastName = nameList[-1]
 
-print "first name: " + appointeeFirstName
-print "last naem: " + appointeeLastName
+print "Student first name: " + appointeeFirstName
+print "Student last name: " + appointeeLastName
 if len(nameList) == 3:
 	print "middle name: " + appointeeMiddleName
 
@@ -141,58 +146,76 @@ matchObject = expressionObject.search(inputVar)
 startTime = matchObject.group(1)
 endTime = matchObject.group(2)
 
+print "startTime" + startTime
+print "endTime" + endTime
+
 # Get the hours for startTime
 # Check to see if the time is in PM and remove it + add 12 hours
 expressionObject = re.compile('pm')
 result = expressionObject.search(startTime)
-if (result != None) & (result.group() == 'pm'):
-	# remove the pm from startTime
-	print "found pm replacing"
-	startTime = expressionObject.sub("", startTime) 
-	# add 12 hours
-	expressionObject = re.compile('\d*')
-	matchObject =expressionObject.search(startTime)
-	startHour = matchObject.group()
-	startHour = int(startHour) + 12
-	startHour = str(startHour)
+
+if result is not None: 
+	if result.group() == 'pm':
+		# remove the pm from startTime
+		print "found pm replacing"
+		startTime = expressionObject.sub("", startTime) 
+		# add 12 hours
+		expressionObject = re.compile('\d*')
+		matchObject =expressionObject.search(startTime)
+		startHour = matchObject.group()
+		startHour = int(startHour) + 12
+		startHour = str(startHour)
+
 # Check to see if the time is in AM and remove it
 expressionObject = re.compile('am')
 result = expressionObject.search(startTime)
-if (result != None) and (result.group() == 'am'):
-	# remove the pm from startTime
-	print "found am replacing"
-	startTime = expressionObject.sub("", startTime) 
+if result is not None:
+	if result.group() == 'am':
+		# remove the pm from startTime
+		print "found am replacing"
+		startTime = expressionObject.sub("", startTime)
+		expressionObject = re.compile('\d*')
+		matchObject =expressionObject.search(startTime)
+		startHour = matchObject.group()
 
 # Get the minutes startTime
-expressionObject = re.compile('(\d\d)')
+expressionObject = re.compile(':(\d\d)')
 print startTime
 matchObject = expressionObject.search(startTime)
-startMinute = matchObject.group()
+startMinute = matchObject.group(1)
+
+# print "Start Hour is " + startHour + " Start Minutes is " + startMinute
 
 # Get the hours for endTime
 # Check to see if the time is in PM and remove it + add 12 hours
 expressionObject = re.compile('pm')
 result = expressionObject.search(endTime)
-if (result != None) & (result.group() == 'pm'):
-	# remove the pm from endTime
-	print "found pm replacing"
-	endTime = expressionObject.sub("", endTime) 
-	# add 12 hours
-	expressionObject = re.compile('\d*')
-	matchObject =expressionObject.search(endTime)
-	endHour = matchObject.group()
-	endHour = int(endHour) + 12
-	endHour = str(endHour)
+
+if result is not None:
+	if result.group() == 'pm':
+		# remove the pm from endTime
+		print "found pm replacing"
+		endTime = expressionObject.sub("", endTime) 
+		# add 12 hours
+		expressionObject = re.compile('\d*')
+		matchObject =expressionObject.search(endTime)
+		endHour = matchObject.group()
+		endHour = int(endHour) + 12
+		endHour = str(endHour)
 # Check to see if the time is in AM and remove it
 expressionObject = re.compile('am')
 result = expressionObject.search(endTime)
-if (result != None) and (result.group() == 'am'):
-	# remove the pm from endTime
-	print "found am replacing"
-	endTime = expressionObject.sub("", endTime) 
+if result is not None: 
+	if result.group() == 'am':
+		# remove the pm from endTime
+		print "found am replacing"
+		endTime = expressionObject.sub("", endTime)
+		expressionObject = re.compile('\d*')
+		matchObject =expressionObject.search(startTime)
+		endHour = matchObject.group()
 
 # Get the minutes endTime
-expressionObject = re.compile('(\d\d)')
+expressionObject = re.compile(':(\d\d)')
 print endTime
 matchObject = expressionObject.search(endTime)
 endMinute = matchObject.group()
