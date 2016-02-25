@@ -237,40 +237,40 @@ print startDate.strftime('%H %M %d %B %Y')
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 con = lite.connect('appt.db')
 
-advisors = (
-    ('Kevin', 'McGrath', 'D', 'dmcgrath@eecs.oregonstate.edu'),
-)
+if emailType == 'confirmed':
+	print "Adding Appointment"
 
-with con:
-	cur = con.cursor() 
-	cur.execute("PRAGMA foreign_keys = 1")
+	with con:
+		cur = con.cursor() 
+		cur.execute("PRAGMA foreign_keys = 1")
 
-	# Check to see if advisor exists in system get their ID key
-	cur.execute("SELECT advisor_id, email_address FROM advisor WHERE email_address = " + "'" + advisorEmail +"'")
-	rows = cur.fetchone()
+		# Check to see if advisor exists in system get their ID key
+		cur.execute("SELECT advisor_id, email_address FROM advisor WHERE email_address = " + "'" + advisorEmail +"'")
+		rows = cur.fetchone()
 
-	# Retrieve the advisor's ID
-	# If not then add them to the system.
-	if rows:
-		advisorId = rows[0]
-		print advisorId
-	else:
-		print "Advisor does not exist. Adding Advisor!"
-		cur.execute ("INSERT INTO advisor (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (advisorFirstName, advisorLastName, advisorMiddleName, advisorEmail))
+		# Retrieve the advisor's ID
+		# If not then add them to the system.
+		if rows:
+			advisorId = rows[0]
+			print advisorId
+		else:
+			print "Advisor does not exist. Adding Advisor!"
+			cur.execute ("INSERT INTO advisor (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (advisorFirstName, advisorLastName, advisorMiddleName, advisorEmail))
 
-	# Check to see if student exists in system get their ID key
-	cur.execute("SELECT student_id, email_address FROM student WHERE email_address = " + "'" + appointeeEmail +"'")
-	rows = cur.fetchone()
+		# Check to see if student exists in system get their ID key
+		cur.execute("SELECT student_id, email_address FROM student WHERE email_address = " + "'" + appointeeEmail +"'")
+		rows = cur.fetchone()
 
-	# Retrieve the student's ID
-	# If not the add them tot he system
-	if rows:
-		studentId = rows[0]
-		print studentId
-	else:
-		print "Student does not exist. Adding Student!"
-		cur.execute ("INSERT INTO student (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (appointeeFirstName, appointeeLastName, appointeeMiddleName, appointeeEmail))
+		# Retrieve the student's ID
+		# If not the add them tot he system
+		if rows:
+			studentId = rows[0]
+			print studentId
+		else:
+			print "Student does not exist. Adding Student!"
+			cur.execute ("INSERT INTO student (first_name, last_name, middle_name, email_address) VALUES ( ?, ?, ?, ?)", (appointeeFirstName, appointeeLastName, appointeeMiddleName, appointeeEmail))
 
+		cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end)
 
 
 
