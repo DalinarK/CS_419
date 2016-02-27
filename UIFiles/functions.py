@@ -13,7 +13,7 @@
 
 import calendar
 import datetime
-from unicurses import *
+from curses import *
 
 
 # Selected calendar day
@@ -110,9 +110,9 @@ def gen_list_outline_window(max_y, max_x):
 
     # Create the window and box it
     list_outline_win = newwin(max_y - 6, max_x - 2, 3, 1)
-    wattron(list_outline_win, COLOR_PAIR(2))
-    box(list_outline_win)
-    wattroff(list_outline_win, COLOR_PAIR(2))
+    list_outline_win.attron(color_pair(2))
+    list_outline_win.box()
+    list_outline_win.attroff(color_pair(2))
 
     # Get window dimensions
     win_y = list_outline_win.getmaxyx()[0]
@@ -124,13 +124,13 @@ def gen_list_outline_window(max_y, max_x):
     help_str = " [c = change date | d = delete appt | q = quit] "
 
     # Add window heading, centered
-    mvwaddstr(list_outline_win, 0, (win_x/2 - len(list_title)/2), list_title, COLOR_PAIR(3)|A_BOLD)
+    list_outline_win.addstr(0, (win_x/2 - len(list_title)/2), list_title, color_pair(3)|A_BOLD)
 
     # Turn off BOLD
-    wattroff(list_outline_win, A_BOLD)
+    list_outline_win.attroff(A_BOLD)
 
     # Add help text, centered
-    mvwaddstr(list_outline_win, win_y-1, (win_x/2 - len(help_str)/2), help_str, COLOR_PAIR(3))
+    list_outline_win.addstr(win_y-1, (win_x/2 - len(help_str)/2), help_str, color_pair(3))
 
     return list_outline_win
 
@@ -143,22 +143,22 @@ def gen_popup_outline_window(max_y, max_x, win_title, help_str):
 
     # Create the window and box it
     popup_outline_win = newwin(12, 28, (max_y/2 - 6), (max_x/2 - 14))
-    wattron(popup_outline_win, COLOR_PAIR(2))
-    box(popup_outline_win)
-    wattroff(popup_outline_win, COLOR_PAIR(2))
+    popup_outline_win.attron(color_pair(2))
+    popup_outline_win.box()
+    popup_outline_win.attroff(color_pair(2))
 
     # Get window dimensions
     win_y = popup_outline_win.getmaxyx()[0]
     win_x = popup_outline_win.getmaxyx()[1]
 
     # Add window heading, centered
-    mvwaddstr(popup_outline_win, 0, (win_x/2 - len(win_title)/2), win_title, COLOR_PAIR(3)|A_BOLD)
+    popup_outline_win.addstr(0, (win_x/2 - len(win_title)/2), win_title, color_pair(3)|A_BOLD)
 
     # Turn off BOLD
-    wattroff(popup_outline_win, A_BOLD)
+    popup_outline_win.attroff(A_BOLD)
 
     # Add help text, centered
-    mvwaddstr(popup_outline_win, win_y-1, (win_x/2 - len(help_str)/2), help_str, COLOR_PAIR(3))
+    popup_outline_win.addstr(win_y-1, (win_x/2 - len(help_str)/2), help_str, color_pair(3))
 
     return popup_outline_win
 
@@ -175,7 +175,7 @@ def process_appt(max_y, max_x, cnf_win, menu_items, choice):
     cnf_title = " Confirm Deletion "
     help_str = " [y = yes | q = quit] "
     popup_outline_win = gen_popup_outline_window(max_y, max_x, cnf_title, help_str)
-    wrefresh(popup_outline_win)
+    popup_outline_win.refresh()
 
     # Clunky, but it works. Curses has little/no text formatting.
     msg1 = "  Are you sure you\n"
@@ -190,7 +190,7 @@ def process_appt(max_y, max_x, cnf_win, menu_items, choice):
     deciding = True
     while(deciding):
         # Read keyboard input from the confirmation window
-        c = wgetch(cnf_win)
+        c = cnf_win.getch()
 
         # OPERATION: CONFIRM
         # If user hits y or Y (ASCII code 89 or 121)...
@@ -217,13 +217,13 @@ def process_appt(max_y, max_x, cnf_win, menu_items, choice):
 def print_cnf(cnf_win, msg):
 
     # Clear out the confirmation window
-    werase(cnf_win)
+    cnf_win.erase()
 
     # Print confirmation message & appointment
-    mvwaddstr(cnf_win, 0, 0, msg)
+    cnf_win.addstr(0, 0, msg)
 
     # Send the new calendar to the screen
-    wrefresh(cnf_win)
+    cnf_win.refresh()
 
 
 ################################################
@@ -250,7 +250,7 @@ def delete_appt(menu_items, choice):
 def print_cal(cal_win, cal_highlight):
 
     # Clear out the calendar window
-    werase(cal_win)
+    cal_win.erase()
 
     # Holds the last day of the month
     last_day = 0
@@ -259,7 +259,7 @@ def print_cal(cal_win, cal_highlight):
     calhead = calendar.month_name[cal_highlight['month']] + " " + str(cal_highlight['year'])
 
     # Print month, day, year heading, centered
-    mvwaddstr(cal_win, 0, (cal_win.getmaxyx()[1]/2 - len(calhead)/2), calhead)
+    cal_win.addstr(0, (cal_win.getmaxyx()[1]/2 - len(calhead)/2), calhead)
 
     # Generate a collection of week arrays for the month and year
     calendar.setfirstweekday(calendar.SUNDAY)
@@ -271,18 +271,18 @@ def print_cal(cal_win, cal_highlight):
            if cal[i][x] != 0:
                # If we have reached the highlighted day...
                if cal[i][x] == cal_highlight['day']:
-                   wattron(cal_win, A_REVERSE)
-                   mvwaddstr(cal_win, i+2, x * 3, cal[i][x])
-                   wattroff(cal_win, A_REVERSE)
+                   cal_win.attron(A_REVERSE)
+                   cal_win.addstr(i+2, x * 3, str(cal[i][x]))
+                   cal_win.attroff(A_REVERSE)
                else:
-                   mvwaddstr(cal_win, i+2, x * 3, cal[i][x])
+                   cal_win.addstr(i+2, x * 3, str(cal[i][x]))
                # Save the new last day
                last_day = cal[i][x]
            else:
-               mvwaddstr(cal_win, i+2, x * 3, ' ')
+               cal_win.addstr(i+2, x * 3, ' ')
 
     # Send the new calendar to the screen
-    wrefresh(cal_win)
+    cal_win.refresh()
 
     # nav_cal needs to know the last day of the month
     return last_day
@@ -313,7 +313,7 @@ def nav_cal(cal_win):
         success = False
 
         # Read keyboard input from the calendar window, not the list!
-        c = wgetch(cal_win)
+        c = cal_win.getch()
 
         # NAVIGATION: UP
         # If cursor UP arrow or k (ASCII code 107)...
@@ -388,7 +388,8 @@ def nav_cal(cal_win):
 def print_list(list_win, menu_items, list_info):
 
     # Clear out the list window
-    werase(list_win)
+    #werase(list_win)
+    list_win.erase()
 
     # How many appointments have been displayed so far
     line_count = 1
@@ -399,20 +400,20 @@ def print_list(list_win, menu_items, list_info):
     for i in range(list_info['start'], list_info['end']):
         if(list_info['highlight'] == line_count):
             # When we get to the highlight line, reverse it
-            wattron(list_win, A_REVERSE)
-            mvwaddstr(list_win, list_win_y, 0, menu_items[i])
-            wattroff(list_win, A_REVERSE)
+            list_win.attron(A_REVERSE)
+            list_win.addstr(list_win_y, 0, menu_items[i])
+            list_win.attroff(A_REVERSE)
         else:
-            mvwaddstr(list_win, list_win_y, 0, menu_items[i])
+            list_win.addstr(list_win_y, 0, menu_items[i])
 
         # Clear to end of line.
-        wclrtoeol(list_win)
+        list_win.clrtoeol()
 
         # Increment to the next row...
         list_win_y += 1
         line_count += 1
 
     # Send updated appointment listing to the screen
-    wrefresh(list_win)
+    list_win.refresh()
 
 

@@ -6,7 +6,10 @@
 #
 # appointments.py - Main appointments application
 #
-# Requires functions.py and unicurses.py
+# Requires: 
+#    functions.py (provided)
+#    ncurses libraries (incl. w/ Linux)
+#    Python curses (incl. w/ Python)
 #
 
 # Scrolling list hints taken from UniCurses test_keymenu demo as well as
@@ -14,10 +17,10 @@
 
 
 from functions import *
-from unicurses import *
+from curses import *
 
 
-def main():
+def main(stdscr):
 
     # Holds data about the appointment list. This dictionary is mutable so
     # it should not be necessary to make this global to "share" it.
@@ -35,19 +38,12 @@ def main():
 
 
     ##############################################
-    # Set up stdscr and base curses settings
+    # Set up some base curses settings
     ##############################################
 
-    # Initialize the screen. This syntax must be adhered to.
-    stdscr = initscr()
-
-    # Curses ettings
-    noecho()               # disable key echo
-    cbreak()               # user input is immediately available
-    start_color()          # start color system (not entirely necessary)
     use_default_colors()   # like the function says
     curs_set(False)        # no blinking cursor
-    keypad(stdscr, True)   # keyboard support
+    stdscr.keypad(True)    # keyboard support
     choice       = 0       # ENTER choice
     c            = 0       # character input
     max_y, max_x = stdscr.getmaxyx() # Y,X limits of term window
@@ -58,8 +54,6 @@ def main():
     init_pair(3, COLOR_GREEN, -1)
 
     # Get the list of appointments
-    # TODO: This function will eventually get appointments from the
-    # database. For now, get_appts() just returns a sample listing.
     menu_items = get_appts()
 
 
@@ -70,7 +64,7 @@ def main():
     # Create the "header" window
     header_str = " SIMPLIFIED ADVISING SCHEDULING "
     header_win = newwin(1, max_x - 6, 1, 3)
-    mvwaddstr(header_win, 0, (header_win.getmaxyx()[1]/2 - len(header_str)/2), header_str, COLOR_PAIR(2))
+    header_win.addstr(0, (header_win.getmaxyx()[1]/2 - len(header_str)/2), header_str, color_pair(2))
 
     # Create the Appointment List "outline" window
     list_outline_win = gen_list_outline_window(max_y, max_x)
@@ -78,7 +72,7 @@ def main():
     # Create the Appointment List "container" window. This will
     # be (re)displayed when it's refreshed in the print function.
     list_win = newwin(max_y - 9, max_x - 6, 5, 3)
-    keypad(list_win, True)  
+    list_win.keypad(True)  
 
     # Create the Calendar "outline" window
     cal_title = " Choose A New Date "
@@ -87,21 +81,21 @@ def main():
 
     # Create the Calendar "container" window. 
     cal_win = newwin(8, 20, popup_outline_win.getbegyx()[0]+2, popup_outline_win.getbegyx()[1]+4)
-    keypad(cal_win, True)  
+    cal_win.keypad(True)  
 
     # Create the Confirmation "container" window. 
     cnf_win = newwin(7, 20, popup_outline_win.getbegyx()[0]+2, popup_outline_win.getbegyx()[1]+4)
-    keypad(cnf_win, True)  
+    cnf_win.keypad(True)  
 
     # Create the "footer" window
     footer_str = "[ (c) 2016 | Dustin Dinh | Michael Marven | Erik Ratcliffe ]"
     footer_win = newwin(1, max_x - 6, max_y - 2, 3)
-    mvwaddstr(footer_win, 0, (footer_win.getmaxyx()[1]/2 - len(footer_str)/2), footer_str, COLOR_PAIR(2))
+    footer_win.addstr(0, (footer_win.getmaxyx()[1]/2 - len(footer_str)/2), footer_str, color_pair(2))
 
     # Send the header, list outline, and footer windows to the user
-    wrefresh(header_win)
-    wrefresh(list_outline_win)
-    wrefresh(footer_win)
+    header_win.refresh()
+    list_outline_win.refresh()
+    footer_win.refresh()
 
 
     ##############################################
@@ -141,7 +135,7 @@ def main():
         rescan = False
 
         # Read keyboard input in the list window, not stdscr!
-        c = wgetch(list_win)
+        c = list_win.getch()
 
         # NAVIGATION: UP
         # If cursor UP arrow or k (ASCII code 107)...
@@ -181,14 +175,14 @@ def main():
         # If user hits c or C (for calendar, ASCII code 67 or 99)
         elif c == 67 or c == 99:
             # Clear out the list window
-            werase(list_win)
-            wrefresh(list_win)
+            list_win.erase()
+            list_win.refresh()
 
             # Display the calendar 
             cal_title = " Choose A New Date "
             help_str = " [t = today | q = quit] "
             popup_outline_win = gen_popup_outline_window(max_y, max_x, cal_title, help_str)
-            wrefresh(popup_outline_win)
+            popup_outline_win.refresh()
             success = nav_cal(cal_win)
 
             # If we got a new date, signal that a fresh appointment list
@@ -198,7 +192,7 @@ def main():
 
             # Update the list outline window with the new date.
             list_outline_win = gen_list_outline_window(max_y, max_x)
-            wrefresh(list_outline_win)
+            list_outline_win.refresh()
 
 
         # OPERATION: DELETE APPOINTMENT
@@ -242,9 +236,7 @@ def main():
         elif c == 81 or c == 113 or c == 27:
             running = False
 
-        # Get the list of appointments
-        # TODO: This function will eventually get appointments from the
-        # database. For now, get_appts() just returns a sample listing.
+        # Re-get the list of appointments
         if rescan: 
 
             # Get a fresh set of appointments from the database
@@ -257,11 +249,10 @@ def main():
         print_list(list_win, menu_items, list_info)
 
 
-    # End curses
-    refresh()
-    endwin()
+    # End curses...wrapper (below) cleans things up.
     return 0
 
-if(__name__ == "__main__"):
-    main()
+
+# Initializes curses and cleanly exits without destroying the terminal
+wrapper(main)
 
