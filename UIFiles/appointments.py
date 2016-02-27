@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #
 # CS 419 Winter 2016, Group 10
 # Simplified Advising Scheduling
