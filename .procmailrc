@@ -5,13 +5,13 @@ MAILDIR=$HOME/Mail            # Where Procmail recipes deliver
 LOGFILE=$HOME/.procmaillog    # Keep a log for troubleshooting.
 # Recipes
 :0
-* ^Subject:.*Advising signup with .*(cancelled|confirmed)
+* ^Subject:.*Advising signup
 {
 :0Wc
 | /usr/bin/python /vagrant/parse.py	
 
 :0c
-| cat >> testfile
+| cat >> whynotworking
 
 :0c
 $DEFAULT

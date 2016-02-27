@@ -1,0 +1,77 @@
+From vagrant  Wed Feb 24 23:25:12 2016
+Delivered-To: weaselmuncher@gmail.com
+Received: from pa-in-f109.1e100.net [74.125.25.109]
+	by precise32 with POP3 (fetchmail-6.3.21)
+	for <vagrant@localhost> (single-drop); Wed, 24 Feb 2016 23:25:12 +0000 (UTC)
+Received: by 10.202.235.194 with SMTP id j185csp2638555oih;
+        Wed, 24 Feb 2016 15:11:32 -0800 (PST)
+X-Received: by 10.60.101.132 with SMTP id fg4mr29964924oeb.21.1456355492675;
+        Wed, 24 Feb 2016 15:11:32 -0800 (PST)
+Return-Path: <djdinh@gmail.com>
+Received: from mail-ob0-x22f.google.com (mail-ob0-x22f.google.com. [2607:f8b0:4003:c01::22f])
+        by mx.google.com with ESMTPS id n134si4190293oig.6.2016.02.24.15.11.32
+        for <weaselmuncher@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Feb 2016 15:11:32 -0800 (PST)
+Received-SPF: pass (google.com: domain of djdinh@gmail.com designates 2607:f8b0:4003:c01::22f as permitted sender) client-ip=2607:f8b0:4003:c01::22f;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of djdinh@gmail.com designates 2607:f8b0:4003:c01::22f as permitted sender) smtp.mailfrom=djdinh@gmail.com;
+       dkim=pass header.i=@gmail.com;
+       dmarc=pass (p=NONE dis=NONE) header.from=gmail.com
+Received: by mail-ob0-x22f.google.com with SMTP id ts10so32717425obc.1
+        for <weaselmuncher@gmail.com>; Wed, 24 Feb 2016 15:11:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:from:date:message-id:subject:to:content-type;
+        bh=NRun7YQFtdFGrBuFbDMQsfWorrawGCS2135wP1sccxY=;
+        b=XsjUccsI+NYeOKDwFkJjMkjcE/Xq2qYmYUjnwJbxQGvFGPhO6thF7GXPJkzd4huqk5
+         JS/PnB1wykhVAALKcVZ+XU8ytijU9YHuVux9DWBEWJhSikz0ZOcFWF1gDh7NCDOhUyqE
+         SuSCRgMmywdCL4mL/JbiYFs3ID3kvwMIxq1xUUsWaQMQceqhBwfItPe0uRgXl7PEqpDa
+         FctBDSjfZjk5p3fCBTg14stc+wb1d6VdtnG60+7F4hh4GsU6omzpYCkkx0XFfI35Lysw
+         mW9EhwXVcfQtSW6iTt6rmtj7jU10EbKzw8K+xibs5mYfdl5FVquGJPR7LusDYGOO5qAk
+         xLgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-type;
+        bh=NRun7YQFtdFGrBuFbDMQsfWorrawGCS2135wP1sccxY=;
+        b=MmeqfHVFBOC9di8/I8YKmrTF8Xkq98w1PB5CRs0IE0zdTVcG+37X92Lj5MnxRl6kkN
+         ASvAR5c9ug5Sftj0fWmLAg83gK4K7RV4sXlnsjVn166NWWLMM/cfdlz2Og5EbhVBKUG7
+         s31R69WV8JjtkoBDaVWNvTKAOy0DvAN5SyBfKaQBlsNUstLfD/06AjK53d8bnuh0iwXM
+         PqXZu+E2I94Zydbzhg97XgYTkCm6xp4vkR8PBSU1eNPq9LiEdwkKmAjibEJrYgRomN0K
+         MecGDwRdoCrGZJmT2kK4GRRxoq/UHZGB4j2qOiBNx3LxpMn4PuPcD4w3T5tVpiWiw3Ou
+         YHMg==
+X-Gm-Message-State: AG10YOQuh8VH+Fzw5p8CBBxYqBdsN2jB55HCwxnJ02j+OuNLTN+2P35SZmgo9bkaQzCkqqs6JGDW6QRlIMY1xg==
+X-Received: by 10.60.69.233 with SMTP id h9mr16790049oeu.2.1456355492568; Wed,
+ 24 Feb 2016 15:11:32 -0800 (PST)
+MIME-Version: 1.0
+Received: by 10.202.102.71 with HTTP; Wed, 24 Feb 2016 15:11:13 -0800 (PST)
+From: Dustin Dinh <djdinh@gmail.com>
+Date: Wed, 24 Feb 2016 15:11:13 -0800
+Message-ID: <CADZP-cALm+5RH_ucbyjhzt0=Cqbe3f2sqJ8RG9Dpqup7ehU3hA@mail.gmail.com>
+Subject: Advising Signup Cancellation
+To: REDACTED@oregonstate.edu, weaselmuncher@gmail.com
+Content-Type: multipart/alternative; boundary=001a11331f94cd292f052c8c2fff
+
+--001a11331f94cd292f052c8c2fff
+Content-Type: text/plain; charset=UTF-8
+
+Advising Signup with McGrath, D Kevin CANCELLED
+Name: Stephen Fry
+Email: Kaladin@gmail.com
+Date: Thursday, November 21st, 2012
+Time: 1:00pm - 1:15pm
+
+--001a11331f94cd292f052c8c2fff
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div style=3D"font-size:12.8px">Advising Signup with McGra=
+th, D Kevin CANCELLED=C2=A0</div><div style=3D"font-size:12.8px">Name: REDA=
+CTED</div><div style=3D"font-size:12.8px">Email:=C2=A0<a href=3D"mailto:Kal=
+adin@gmail.com" target=3D"_blank">Kaladin@gmail.com</a></div><div style=3D"=
+font-size:12.8px">Date: Thursday, November 21st, 2012</div><div style=3D"fo=
+nt-size:12.8px">Time: 11:00am - 11:15am</div></div>
+
+--001a11331f94cd292f052c8c2fff--
+
