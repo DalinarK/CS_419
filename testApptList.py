@@ -38,7 +38,7 @@ def get_appts():
     #   [4} appt_t      (ISO date of start time)
     sql = "SELECT s.first_name, s.middle_name, s.last_name, a.id AS appt_id, a.date_time_start AS appt_t"
     sql += " FROM appointment AS a JOIN student AS s WHERE s.student_id = a.fk_student_id" 
-    sql += " AND appt_t >= date('" + isodate + "') AND appt_t < date('" + isodate + "', '+1 day')"
+    sql += " AND appt_t >= date('" + isodate + "') AND appt_t < date('" + isodate + "', '+1 day') ORDER BY appt_t"
 
     print "Appointments for " + isodate
 
