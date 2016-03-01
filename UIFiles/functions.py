@@ -13,6 +13,8 @@
 
 import calendar
 import datetime
+import time
+import sqlite3 as lite
 from curses import *
 
 
@@ -62,42 +64,99 @@ def reset_list(list_info, menu_items, list_win):
 # Get the list of appointments from the database
 #################################################
 
-#TODO: This function will get appointments from the database
-
 def get_appts():
-    
+
+    # Set up a new dictionary for appointment data
+    appts = {}
+
+    # IMPORTANT: SQLite3 only recognizes ISO8601 date strings.
+
+    # Force 2-digit conversion of spelled-out month and day values,
+    # required for ISO date string.
+    padmonth = format(time.strptime(str(cal_selected['month']), '%m').tm_mon, '02d')
+    padday   = format(time.strptime(str(cal_selected['day']), '%d').tm_mday, '02d')
+
+    # Build an ISO8601 date string (NOTE: Is this really an ISO string?)
+    isodate = str(cal_selected['year']) + "-" + str(padmonth) + "-" + str(padday)
+
+    # SQLite3 query for appointments that match isodate.
+    # Result set includes:
+    #   [0] first_name  (student first name)
+    #   [1} middle_name (student middle name)
+    #   [2} last_name   (student last name)
+    #   [3} appt_id     (appointment ID in the DB)
+    #   [4} appt_t      (ISO date of start time)
+    sql = "SELECT s.first_name, s.middle_name, s.last_name, a.id AS appt_id, a.date_time_start AS appt_t"
+    sql += " FROM appointment AS a JOIN student AS s WHERE s.student_id = a.fk_student_id" 
+    sql += " AND appt_t >= date('" + isodate + "') AND appt_t < date('" + isodate + "', '+1 day') ORDER BY appt_t"
+
+    # Open the database. Of course, the database should exist first. Check
+    # this.
+    con = lite.connect('appt.db')
+
+    with con:
+        cur = con.cursor()
+        cur.execute(sql)
+
+        # Get the result set
+        rows = cur.fetchall()
+
+        # Add rows to appts list. Format the data into dictionary entries:
+        #   id = appt_id
+        #   name = first_name + middle_name + last_name
+        #   time = date.strftime(isodate, "
+        appt_n = 0
+        for row in rows:
+
+            # Create a datetime object from the appointment time string
+            t = time.strptime(row[4], '%Y-%m-%d %H:%M:%S')
+            appt_dt = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+
+            # Appointment start time: appt_dt.strftime("%-I:%M%p")
+
+            # Build the student name
+            s_name = row[0]
+            if row[1] != "":
+                s_name += (" " + row[1])
+            if row[2] != "":
+                s_name += (" " + row[2])
+
+            # Add the row to the dictionary
+            appts[appt_n] = row[3], appt_dt.strftime("%-I:%M%p"), s_name
+            appt_n += 1
+
     # An array of appointments for testing purposes...
-    appts = [
-            "7:00 am - Bill Gates",
-            "7:20 am - Lady Gaga",
-            "7:40 am - Alfred Hitchcock",
-            "8:00 am - Bernie Sanders",
-            "8:20 am - Mary Queen of Scots",
-            "8:40 am - Stephen King",
-            "9:00 am - Barack Obama",
-            "9:20 am - Lady Gaga",
-            "9:40 am - Jackie Chan",
-            "10:00 am - Kate Middleton",
-            "10:20 am - Chris Christie",
-            "10:40 am - Idris Elba",
-            "11:00 am - Mary Queen of Scots",
-            "11:20 am - Hillary Clinton",
-            "11:40 am - Bill Gates",
-            "12:00 pm - Bernie Sanders",
-            "12:20 pm - Lady Gaga",
-            "12:40 pm - Alfred Hitchcock",
-            "1:00 pm - Bernie Sanders",
-            "1:20 pm - Mary Queen of Scots",
-            "1:40 pm - Stephen King",
-            "2:00 pm - Barack Obama",
-            "2:20 pm - Lady Gaga",
-            "2:40 pm - Jackie Chan",
-            "3:00 pm - Kate Middleton",
-            "3:20 pm - Chris Christie",
-            "3:40 pm - Idris Elba",
-            "4:00 pm - Mary Queen of Scots",
-            "4:20 pm - Hillary Clinton",
-            "4:40 pm - Chris Rock" ]
+    #appts = [
+    #        "7:00 am - Bill Gates",
+    #        "7:20 am - Lady Gaga",
+    #        "7:40 am - Alfred Hitchcock",
+    #        "8:00 am - Bernie Sanders",
+    #        "8:20 am - Mary Queen of Scots",
+    #        "8:40 am - Stephen King",
+    #        "9:00 am - Barack Obama",
+    #        "9:20 am - Lady Gaga",
+    #        "9:40 am - Jackie Chan",
+    #        "10:00 am - Kate Middleton",
+    #        "10:20 am - Chris Christie",
+    #        "10:40 am - Idris Elba",
+    #        "11:00 am - Mary Queen of Scots",
+    #        "11:20 am - Hillary Clinton",
+    #        "11:40 am - Bill Gates",
+    #        "12:00 pm - Bernie Sanders",
+    #        "12:20 pm - Lady Gaga",
+    #        "12:40 pm - Alfred Hitchcock",
+    #        "1:00 pm - Bernie Sanders",
+    #        "1:20 pm - Mary Queen of Scots",
+    #        "1:40 pm - Stephen King",
+    #        "2:00 pm - Barack Obama",
+    #        "2:20 pm - Lady Gaga",
+    #        "2:40 pm - Jackie Chan",
+    #        "3:00 pm - Kate Middleton",
+    #        "3:20 pm - Chris Christie",
+    #        "3:40 pm - Idris Elba",
+    #        "4:00 pm - Mary Queen of Scots",
+    #        "4:20 pm - Hillary Clinton",
+    #        "4:40 pm - Chris Rock" ]
 
     return appts
 
@@ -398,13 +457,16 @@ def print_list(list_win, menu_items, list_info):
     list_win_y = 0
 
     for i in range(list_info['start'], list_info['end']):
+        # Build a string to display in the list
+        appt_str = menu_items[i][1] + " - " + menu_items[i][2]
+
         if(list_info['highlight'] == line_count):
             # When we get to the highlight line, reverse it
             list_win.attron(A_REVERSE)
-            list_win.addstr(list_win_y, 0, menu_items[i])
+            list_win.addstr(list_win_y, 0, appt_str)
             list_win.attroff(A_REVERSE)
         else:
-            list_win.addstr(list_win_y, 0, menu_items[i])
+            list_win.addstr(list_win_y, 0, appt_str)
 
         # Clear to end of line.
         list_win.clrtoeol()
