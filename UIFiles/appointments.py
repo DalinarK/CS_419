@@ -201,6 +201,8 @@ def main(stdscr):
         # If user hits d or D (ASCII code 68 or 100)...
         elif c == 68 or c == 100:
             if list_info['n_items'] >= 1:
+                # Choice points to the menu_items index, NOT the
+                # appointment ID in the database!
                 choice = list_info['highlight'] + list_info['highlight_offset'] - 1
 
                 # Process (delete) the appointment.
@@ -208,29 +210,8 @@ def main(stdscr):
 
                 # If an appointment was deleted, start the listing over again.
                 # Reset values, recalculate list start/end, etc. 
-                # TODO: Put these settings in a dictionary and use a
-                # function to change them!
                 if success:
-
-                    # Note: This may not be necessary when the database is
-                    # connected. It is needed for debugging w/o the
-                    # database, though.
-                    reset_list(list_info, menu_items, list_win)
-
-                    # FOR TESTING PURPOSES: Only rescan the appointment
-                    # list if we choose a different calendar date. Until
-                    # appointments are actually removed from an actual
-                    # database, rescanning the appointments will always
-                    # result in a full sample list of appointments. This
-                    # does us no favors during testing.
-                    #
-                    # For now, deleting appointments removes them from the
-                    # sample appointments in memory, then choosing a new
-                    # calendar date will rescan the sample appointments
-                    # list. At least it LOOKS correct.
-                      
-                    # Get a fresh set of appointments
-                    # rescan = True
+                    rescan = True
 
 
         # OPERATION: QUIT

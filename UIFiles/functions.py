@@ -81,17 +81,25 @@ def get_appts():
 
     # SQLite3 query for appointments that match isodate.
     # Result set includes:
+    #
     #   [0] first_name  (student first name)
     #   [1} middle_name (student middle name)
     #   [2} last_name   (student last name)
-    #   [3} appt_id     (appointment ID in the DB)
-    #   [4} appt_t      (ISO date of start time)
-    sql = "SELECT s.first_name, s.middle_name, s.last_name, a.id AS appt_id, a.date_time_start AS appt_t"
+    #   [3} s_email     (student email address)
+    #   [4} appt_id     (appointment ID in the DB)
+    #   [5} appt_st     (ISO datetime of appt start time)
+    #   [6} appt_et     (ISO datetime of appt end time)
+    #
+    # Results are ordered by appt_st (start time).
+    #
+    sql = "SELECT s.first_name, s.middle_name, s.last_name, s.email_address AS s_email,"
+    sql += " a.id AS appt_id, a.date_time_start AS appt_st, a.date_time_end AS appt_et"
     sql += " FROM appointment AS a JOIN student AS s WHERE s.student_id = a.fk_student_id" 
-    sql += " AND appt_t >= date('" + isodate + "') AND appt_t < date('" + isodate + "', '+1 day') ORDER BY appt_t"
+    sql += " AND appt_st >= date('" + isodate + "')"
+    sql += " AND appt_st < date('" + isodate + "', '+1 day')"
+    sql += " ORDER BY appt_st"
 
-    # Open the database. Of course, the database should exist first. Check
-    # this.
+    # Open the database. Of course, the database should exist first. Check this.
     con = lite.connect('appt.db')
 
     with con:
@@ -101,18 +109,19 @@ def get_appts():
         # Get the result set
         rows = cur.fetchall()
 
-        # Add rows to appts list. Format the data into dictionary entries:
-        #   id = appt_id
-        #   name = first_name + middle_name + last_name
-        #   time = date.strftime(isodate, "
+        # Add rows to appts list
         appt_n = 0
         for row in rows:
 
-            # Create a datetime object from the appointment time string
-            t = time.strptime(row[4], '%Y-%m-%d %H:%M:%S')
-            appt_dt = datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec)
+            # Create a datetime object from the appointment start time
+            # NOTE: For now, ISO dates are formatted like so: YYYY-MM-DD HH:MM:SS
+            ts = time.strptime(row[5], '%Y-%m-%d %H:%M:%S')
+            appt_sdt = datetime.datetime(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec)
 
-            # Appointment start time: appt_dt.strftime("%-I:%M%p")
+            # Create a datetime object from the appointment end time
+            # NOTE: For now, ISO dates are formatted like so: YYYY-MM-DD HH:MM:SS
+            te = time.strptime(row[6], '%Y-%m-%d %H:%M:%S')
+            appt_edt = datetime.datetime(te.tm_year, te.tm_mon, te.tm_mday, te.tm_hour, te.tm_min, te.tm_sec)
 
             # Build the student name
             s_name = row[0]
@@ -121,43 +130,22 @@ def get_appts():
             if row[2] != "":
                 s_name += (" " + row[2])
 
-            # Add the row to the dictionary
-            appts[appt_n] = row[3], appt_dt.strftime("%-I:%M%p"), s_name
+            # Add the row to the appts dictionary. Each record should end up 
+            # with the following items, in order:
+            #
+            #   [0} appointment ID in the DB
+            #   [1} ISO datetime of appt start time
+            #   [2} ISO datetime of appt end time
+            #   [3] student full name
+            #   [4] student email
+            # 
+            appts[appt_n] = row[4], appt_sdt, appt_edt, s_name, row[3]
             appt_n += 1
 
-    # An array of appointments for testing purposes...
-    #appts = [
-    #        "7:00 am - Bill Gates",
-    #        "7:20 am - Lady Gaga",
-    #        "7:40 am - Alfred Hitchcock",
-    #        "8:00 am - Bernie Sanders",
-    #        "8:20 am - Mary Queen of Scots",
-    #        "8:40 am - Stephen King",
-    #        "9:00 am - Barack Obama",
-    #        "9:20 am - Lady Gaga",
-    #        "9:40 am - Jackie Chan",
-    #        "10:00 am - Kate Middleton",
-    #        "10:20 am - Chris Christie",
-    #        "10:40 am - Idris Elba",
-    #        "11:00 am - Mary Queen of Scots",
-    #        "11:20 am - Hillary Clinton",
-    #        "11:40 am - Bill Gates",
-    #        "12:00 pm - Bernie Sanders",
-    #        "12:20 pm - Lady Gaga",
-    #        "12:40 pm - Alfred Hitchcock",
-    #        "1:00 pm - Bernie Sanders",
-    #        "1:20 pm - Mary Queen of Scots",
-    #        "1:40 pm - Stephen King",
-    #        "2:00 pm - Barack Obama",
-    #        "2:20 pm - Lady Gaga",
-    #        "2:40 pm - Jackie Chan",
-    #        "3:00 pm - Kate Middleton",
-    #        "3:20 pm - Chris Christie",
-    #        "3:40 pm - Idris Elba",
-    #        "4:00 pm - Mary Queen of Scots",
-    #        "4:20 pm - Hillary Clinton",
-    #        "4:40 pm - Chris Rock" ]
+    # Close the database connection
+    con.close()
 
+    # Return appointment dictionary
     return appts
 
 
@@ -238,8 +226,8 @@ def process_appt(max_y, max_x, cnf_win, menu_items, choice):
 
     # Clunky, but it works. Curses has little/no text formatting.
     msg1 = "  Are you sure you\n"
-    msg2 = "want to delete this:\n\n"
-    msg = msg1 + msg2 + menu_items[choice]
+    msg2 = "want to delete this:\n\n" 
+    msg = msg1 + msg2 + menu_items[choice][3]
 
     # Print Confirmation 
     print_cnf(cnf_win, msg)
@@ -254,11 +242,12 @@ def process_appt(max_y, max_x, cnf_win, menu_items, choice):
         # OPERATION: CONFIRM
         # If user hits y or Y (ASCII code 89 or 121)...
         if c == 89 or c == 121:
-            success, del_item = delete_appt(menu_items, choice)
+            success = delete_appt(menu_items, choice)
             if success:
                 deciding = False
             else:
-                msg = "ERROR: Could not delete \"" + menu_items[choice] + "\""
+                # For now, report the appointment ID as not deleted
+                msg = "ERROR: Could not delete appt ID \"" + menu_items[choice][0] + "\""
                 print_cnf(cnf_win, msg)
 
         # OPERATION: QUIT THE CALENDAR
@@ -292,14 +281,40 @@ def print_cnf(cnf_win, msg):
 def delete_appt(menu_items, choice):
 
     success = False
-    del_item = ""
+    emailed = False
 
-    del_item = menu_items.pop(choice)
+    # Open the database
+    con = lite.connect('appt.db')
 
-    if del_item != "":
-        success = True
 
-    return success, del_item
+    # TODO: ADD CODE TO SEND CALENDAR EMAIL HERE.
+    #
+    # The menu_items[] list should contain the following:
+    #
+    #   [0} appointment ID in the DB
+    #   [1} ISO datetime of appt start time (YYYY-MM-DD HH:MM:SS)
+    #   [2} ISO datetime of appt end time (YYYY-MM-DD HH:MM:SS)
+    #   [3] student full name
+    #   [4] student email
+    #
+    # Change the truth value of 'emailed' to True if the email 
+    # sends w/o errors.
+    emailed = True
+
+
+    if emailed:
+        # Delete the item from the database
+        con.execute("DELETE FROM appointment WHERE id=?", (menu_items[choice][0],))
+        con.commit()
+
+        # Make sure one change was made to the database. 
+        if con.total_changes == 1:
+            success = True
+
+    # Close the database connection
+    con.close()
+
+    return success
 
 
 ################################################
@@ -447,7 +462,6 @@ def nav_cal(cal_win):
 def print_list(list_win, menu_items, list_info):
 
     # Clear out the list window
-    #werase(list_win)
     list_win.erase()
 
     # How many appointments have been displayed so far
@@ -458,7 +472,20 @@ def print_list(list_win, menu_items, list_info):
 
     for i in range(list_info['start'], list_info['end']):
         # Build a string to display in the list
-        appt_str = menu_items[i][1] + " - " + menu_items[i][2]
+        #
+        # The menu_items[] list should contain the following:
+        #
+        #   [0} appointment ID in the DB
+        #   [1} ISO datetime of appt start time
+        #   [2} ISO datetime of appt end time
+        #   [3] student full name
+        #   [4] student email
+
+        # Create AM/PM time string from ISO datetime of start
+        appt_t = menu_items[i][1].strftime("%-I:%M%p")
+
+        # Combine appt AM/PM time w/ student name 
+        appt_str = appt_t + " - " + menu_items[i][3]
 
         if(list_info['highlight'] == line_count):
             # When we get to the highlight line, reverse it

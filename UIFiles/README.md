@@ -5,14 +5,17 @@ Linux systems).
 
 Make appointments.py executable (on Linux): 'chmod +x appointments.py'
 
-##Update 2016-02-29:##
+##Update 2016-03-02:##
 
-Database is connected to UI, but deletions have not been worked out yet.
-Create an appt.db test database in the same directory as the UI by running
-the tableCreate_withdates.py script (it's in the main repo directory).
-Unless you add appointments to the sample entries in that script, there
-are appointments for Feb 28 and 29 and March 1. No code has been added to
-handle days without appointments (you just get a blank listing). Trying to
-delete an appointment will result in the app crashing. Just sayin'.
+Database is connected to UI and appointment deletions work. No email code
+has been added yet so deleting an appointment just removes it from the
+database.  The ../tableCreate_withdates.py script has been updated to
+create more appointments to make testing a bit easier, at least on March
+2nd. Be sure to run that script in the same directory as the UI scripts to
+build a sorta populated appt.db file.
+
+There is still no code to handle days without appointments (you just get a
+blank listing). 
+
 
 
