@@ -83,12 +83,12 @@ def get_appts():
     # Result set includes:
     #
     #   [0] first_name  (student first name)
-    #   [1} middle_name (student middle name)
-    #   [2} last_name   (student last name)
-    #   [3} s_email     (student email address)
-    #   [4} appt_id     (appointment ID in the DB)
-    #   [5} appt_st     (ISO datetime of appt start time)
-    #   [6} appt_et     (ISO datetime of appt end time)
+    #   [1] middle_name (student middle name)
+    #   [2] last_name   (student last name)
+    #   [3] s_email     (student email address)
+    #   [4] appt_id     (appointment ID in the DB)
+    #   [5] appt_st     (ISO datetime of appt start time)
+    #   [6] appt_et     (ISO datetime of appt end time)
     #
     # Results are ordered by appt_st (start time).
     #
@@ -133,9 +133,9 @@ def get_appts():
             # Add the row to the appts dictionary. Each record should end up 
             # with the following items, in order:
             #
-            #   [0} appointment ID in the DB
-            #   [1} ISO datetime of appt start time
-            #   [2} ISO datetime of appt end time
+            #   [0] appointment ID in the DB
+            #   [1] ISO datetime of appt start time
+            #   [2] ISO datetime of appt end time
             #   [3] student full name
             #   [4] student email
             # 
@@ -291,9 +291,9 @@ def delete_appt(menu_items, choice):
     #
     # The menu_items[] list should contain the following:
     #
-    #   [0} appointment ID in the DB
-    #   [1} ISO datetime of appt start time (YYYY-MM-DD HH:MM:SS)
-    #   [2} ISO datetime of appt end time (YYYY-MM-DD HH:MM:SS)
+    #   [0] appointment ID in the DB
+    #   [1] ISO datetime of appt start time (YYYY-MM-DD HH:MM:SS)
+    #   [2] ISO datetime of appt end time (YYYY-MM-DD HH:MM:SS)
     #   [3] student full name
     #   [4] student email
     #
@@ -475,9 +475,9 @@ def print_list(list_win, menu_items, list_info):
         #
         # The menu_items[] list should contain the following:
         #
-        #   [0} appointment ID in the DB
-        #   [1} ISO datetime of appt start time
-        #   [2} ISO datetime of appt end time
+        #   [0] appointment ID in the DB
+        #   [1] ISO datetime of appt start time
+        #   [2] ISO datetime of appt end time
         #   [3] student full name
         #   [4] student email
 
