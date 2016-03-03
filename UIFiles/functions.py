@@ -16,6 +16,7 @@ import datetime
 import time
 import sqlite3 as lite
 from curses import *
+import os.path
 
 
 # Selected calendar day
@@ -23,6 +24,21 @@ cal_selected = {
         'month': datetime.datetime.now().month,
         'day'  : datetime.datetime.now().day,
         'year' : datetime.datetime.now().year }
+
+
+#################################################
+# Connect to the database
+#################################################
+
+def db_connect():
+
+    #db_path = os.path.expanduser('~')
+    #db_path += '/.appts/appt.db'
+    #db_path += '/.appts/appt.db'
+    db_path = "appt.db"
+    con = lite.connect(db_path)
+
+    return con
 
 
 #################################################
@@ -99,8 +115,8 @@ def get_appts():
     sql += " AND appt_st < date('" + isodate + "', '+1 day')"
     sql += " ORDER BY appt_st"
 
-    # Open the database. Of course, the database should exist first. Check this.
-    con = lite.connect('appt.db')
+    # Open the database.
+    con = db_connect()
 
     with con:
         cur = con.cursor()
@@ -186,10 +202,12 @@ def gen_list_outline_window(max_y, max_x):
 # Create the popup outline window
 ################################################
 
-def gen_popup_outline_window(max_y, max_x, win_title, help_str):
+def gen_popup_outline_window(max_y, max_x, height, width, win_title, help_str):
 
     # Create the window and box it
-    popup_outline_win = newwin(12, 28, (max_y/2 - 6), (max_x/2 - 14))
+    origin_y = (max_y/2 - height/2)
+    origin_x = (max_x/2 - width/2)
+    popup_outline_win = newwin(height, width, origin_y, origin_x)
     popup_outline_win.attron(color_pair(2))
     popup_outline_win.box()
     popup_outline_win.attroff(color_pair(2))
@@ -214,20 +232,21 @@ def gen_popup_outline_window(max_y, max_x, win_title, help_str):
 # Do something with the selected appointment
 ################################################
 
-# TODO: This is where appointments will be deleted.
+def process_appt(max_y, max_x, menu_items, choice):
 
-def process_appt(max_y, max_x, cnf_win, menu_items, choice):
+    # Build the appointment string. We need to measure this to determine
+    # the width of the confirmation popup.
+    msg = menu_items[choice][1].strftime("%-I:%M%p") + " - " + menu_items[choice][3]
 
     # Display the confirmation popup
     cnf_title = " Confirm Deletion "
     help_str = " [y = yes | q = quit] "
-    popup_outline_win = gen_popup_outline_window(max_y, max_x, cnf_title, help_str)
+    popup_outline_win = gen_popup_outline_window(max_y, max_x, 5, len(msg)+6, cnf_title, help_str)
     popup_outline_win.refresh()
 
-    # Clunky, but it works. Curses has little/no text formatting.
-    msg1 = "  Are you sure you\n"
-    msg2 = "want to delete this:\n\n" 
-    msg = msg1 + msg2 + menu_items[choice][3]
+    # Build the confirmation content window (contains the msg)
+    cnf_win = newwin(2, len(msg), max_y/2, (max_x/2 - len(msg)/2))
+    cnf_win.keypad(True)  
 
     # Print Confirmation 
     print_cnf(cnf_win, msg)
@@ -284,7 +303,7 @@ def delete_appt(menu_items, choice):
     emailed = False
 
     # Open the database
-    con = lite.connect('appt.db')
+    con = db_connect()
 
 
     # TODO: ADD CODE TO SEND CALENDAR EMAIL HERE.
@@ -470,37 +489,42 @@ def print_list(list_win, menu_items, list_info):
     # Keeps track of the row we're on
     list_win_y = 0
 
-    for i in range(list_info['start'], list_info['end']):
-        # Build a string to display in the list
-        #
-        # The menu_items[] list should contain the following:
-        #
-        #   [0] appointment ID in the DB
-        #   [1] ISO datetime of appt start time
-        #   [2] ISO datetime of appt end time
-        #   [3] student full name
-        #   [4] student email
+    # If we have appointments to show...
+    if list_info['n_items'] > 0:
+        for i in range(list_info['start'], list_info['end']):
+            # Build a string to display in the list
+            #
+            # The menu_items[] list should contain the following:
+            #
+            #   [0] appointment ID in the DB
+            #   [1] ISO datetime of appt start time
+            #   [2] ISO datetime of appt end time
+            #   [3] student full name
+            #   [4] student email
 
-        # Create AM/PM time string from ISO datetime of start
-        appt_t = menu_items[i][1].strftime("%-I:%M%p")
+            # Create AM/PM time string from ISO datetime of start
+            appt_t = menu_items[i][1].strftime("%-I:%M%p")
 
-        # Combine appt AM/PM time w/ student name 
-        appt_str = appt_t + " - " + menu_items[i][3]
+            # Combine appt AM/PM time w/ student name 
+            appt_str = appt_t + " - " + menu_items[i][3]
 
-        if(list_info['highlight'] == line_count):
-            # When we get to the highlight line, reverse it
-            list_win.attron(A_REVERSE)
-            list_win.addstr(list_win_y, 0, appt_str)
-            list_win.attroff(A_REVERSE)
-        else:
-            list_win.addstr(list_win_y, 0, appt_str)
+            if(list_info['highlight'] == line_count):
+                # When we get to the highlight line, reverse it
+                list_win.attron(A_REVERSE)
+                list_win.addstr(list_win_y, 0, appt_str)
+                list_win.attroff(A_REVERSE)
+            else:
+                list_win.addstr(list_win_y, 0, appt_str)
 
-        # Clear to end of line.
-        list_win.clrtoeol()
+            # Clear to end of line.
+            list_win.clrtoeol()
 
-        # Increment to the next row...
-        list_win_y += 1
-        line_count += 1
+            # Increment to the next row...
+            list_win_y += 1
+            line_count += 1
+    else:
+        # ...otherwise, say there are no appointments.
+        list_win.addstr(list_win_y, 0, "No appointments...")
 
     # Send updated appointment listing to the screen
     list_win.refresh()

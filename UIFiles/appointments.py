@@ -76,18 +76,14 @@ def main(stdscr):
     list_win = newwin(max_y - 9, max_x - 6, 5, 3)
     list_win.keypad(True)  
 
-    # Create the Calendar "outline" window
+    # Create the 12x28 Calendar "outline" window
     cal_title = " Choose A New Date "
     help_str = " [t = today | q = quit] "
-    popup_outline_win = gen_popup_outline_window(max_y, max_x, cal_title, help_str)
+    popup_outline_win = gen_popup_outline_window(max_y, max_x, 12, 28, cal_title, help_str)
 
     # Create the Calendar "container" window. 
     cal_win = newwin(8, 20, popup_outline_win.getbegyx()[0]+2, popup_outline_win.getbegyx()[1]+4)
     cal_win.keypad(True)  
-
-    # Create the Confirmation "container" window. 
-    cnf_win = newwin(7, 20, popup_outline_win.getbegyx()[0]+2, popup_outline_win.getbegyx()[1]+4)
-    cnf_win.keypad(True)  
 
     # Create the "footer" window
     footer_str = "[ (c) 2016 | Dustin Dinh | Michael Marven | Erik Ratcliffe ]"
@@ -180,10 +176,11 @@ def main(stdscr):
             list_win.erase()
             list_win.refresh()
 
-            # Display the calendar 
+            # Display the 12x28 calendar 
             cal_title = " Choose A New Date "
             help_str = " [t = today | q = quit] "
-            popup_outline_win = gen_popup_outline_window(max_y, max_x, cal_title, help_str)
+            #popup_outline_win = gen_popup_outline_window(max_y, max_x, cal_title, help_str)
+            popup_outline_win = gen_popup_outline_window(max_y, max_x, 12, 28, cal_title, help_str)
             popup_outline_win.refresh()
             success = nav_cal(cal_win)
 
@@ -206,7 +203,8 @@ def main(stdscr):
                 choice = list_info['highlight'] + list_info['highlight_offset'] - 1
 
                 # Process (delete) the appointment.
-                success = process_appt(max_y, max_x, cnf_win, menu_items, choice)
+                #success = process_appt(max_y, max_x, cnf_win, menu_items, choice)
+                success = process_appt(max_y, max_x, menu_items, choice)
 
                 # If an appointment was deleted, start the listing over again.
                 # Reset values, recalculate list start/end, etc. 
