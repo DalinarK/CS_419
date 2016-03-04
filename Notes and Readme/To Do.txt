@@ -1,0 +1,2 @@
+Implement michaels cancellation
+See how to access credentials and db from another folder

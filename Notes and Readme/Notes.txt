@@ -1,0 +1,15 @@
+You can put files on the VM by putting it in /vagrant folder. From there you can either create a symbolic link or if you can’t do that use command line copy command to copy it to the next folder. 
+To get into the VM type “vagrant up”
+Then “vagrant ssh”
+To check email, type fetchmail
+To open email type mutt
+
+.procmailrc is stored in /home/vagrant. Cannot create a symbolic link from it. Also you cannot see it if  you type ls because it has a “.” In front of it which gets hidden in linux. You have to type ls –a to see it. 
+
+The python script writes to the folder /home/vagrant/Mail folder
+The shared folder is stored in 
+/vagrant
+Created a symbolic link from /vagrant/ to /home/vagrant
+When doing cat >> testfile. The output goes to /home/vagrant/Mail
+Flip doesn’t allow sql queries from server. Need to figure out an alternate implementation.
+Either send query to an EC2 instance. Run query from linux box. Or run sqllite?

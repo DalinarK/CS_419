@@ -1,2 +1,2 @@
-emailusername = "weaselmuncher@gmail.com"
-emailpassword = "CS419password"
+emailusername = ""
+emailpassword = ""
