@@ -17,7 +17,7 @@ from appt_email import EmailMsg
 
 # Declare variables
 from_addr = "weaselmuncher@gmail.com"
-to_addr = "Rawr@oregonstate.edu, weaselmuncher@gmail.com"
+to_addr = ['gophermuncher@gmail.com' , 'weaselmuncher@gmail.com']
 server = 'smtp.gmail.com'
 server_port = 587
 email_pwd = "CS419password" # TODO: Move this to config.py module

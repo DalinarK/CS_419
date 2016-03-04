@@ -1,5 +1,5 @@
 
-# boring details
+#boring details
 set realname = dustinMutt 
 set from = weaselmuncher@gmail.com
 set use_from = yes
@@ -47,3 +47,4 @@ set smart_wrap       # Don't wrap mid-word
 set pager_context=5  # Retain 5 lines of previous page when scrolling.
 set status_on_top    # Status bar on top.
 push <show-version>  # Shows mutt version at startup
+

@@ -8,7 +8,7 @@ print("Starting python script")
 
 # fileStream.write('swag \n')
 # for line in sys.stdin:
-	# fileStream.write (line),
+# 	fileStream.write (line),
 
 # Stores input into a variable
 inputVar = sys.stdin.read()
