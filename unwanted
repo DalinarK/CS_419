@@ -1,23 +1,22 @@
-swag 
-From vagrant  Fri Mar  4 21:42:27 2016
+From vagrant  Fri Mar  4 21:30:24 2016
 Return-Path: <weaselmuncher@gmail.com>
-Received: from pg-in-f108.1e100.net [173.194.203.108]
+Received: from pc-in-f108.1e100.net [74.125.28.108]
 	by precise32 with POP3 (fetchmail-6.3.21)
-	for <vagrant@localhost> (single-drop); Fri, 04 Mar 2016 21:42:27 +0000 (UTC)
+	for <vagrant@localhost> (single-drop); Fri, 04 Mar 2016 21:30:24 +0000 (UTC)
 Received: from [127.0.1.1] (c-98-255-186-212.hsd1.ca.comcast.net. [98.255.186.212])
-        by smtp.gmail.com with ESMTPSA id w69sm7622547pfi.55.2016.03.04.13.42.23
+        by smtp.gmail.com with ESMTPSA id kw10sm7637447pab.0.2016.03.04.13.30.17
         for <weaselmuncher@gmail.com>
         (version=TLS1_1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 04 Mar 2016 13:42:23 -0800 (PST)
-Message-ID: <56da013f.480e620a.ba037.10e9@mx.google.com>
-Date: Fri, 04 Mar 2016 13:42:23 -0800 (PST)
-Content-Type: multipart/mixed; boundary="===============0577783617=="
+        Fri, 04 Mar 2016 13:30:17 -0800 (PST)
+Message-ID: <56d9fe69.ca77420a.834c4.17bd@mx.google.com>
+Date: Fri, 04 Mar 2016 13:30:17 -0800 (PST)
+Content-Type: multipart/mixed; boundary="===============0708350508=="
 MIME-Version: 1.0
 From: weaselmuncher@gmail.com
 To: weaselmuncher@gmail.com
 Subject: Advising Signup with McGrath, D Kevin confirmed for Gaga, Lady
 
---===============0577783617==
+--===============0708350508==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -28,5 +27,5 @@ Email: Rawr@oregonstate.edu
 Date: Wednesday, April 21st, 2016
 Time:  1:00pm - 1:15pm 
 Please contact support@engr.oregonstate.edu if you experience problems 
---===============0577783617==--
+--===============0708350508==--
 

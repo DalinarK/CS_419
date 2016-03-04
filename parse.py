@@ -1,9 +1,12 @@
 import sys
+import credentials
 import re
 import datetime
 import sqlite3 as lite
+from appt_email import CalAppt
 
 print("Starting python script")
+
 # fileStream = open("pythoncreatedfile", 'w')
 
 # fileStream.write('swag \n')
@@ -45,7 +48,7 @@ if len(nameList) == 2:
 	# print "found two names"
 	advisorFirstName = nameList[1]
 	advisorLastName = nameList[0]
-	advisorMiddleName = None
+	advisorMiddleName = " "
 elif len(nameList) == 3:
 	# print "found three names"
 	advisorFirstName = nameList[2]
@@ -63,7 +66,7 @@ if len(nameList) == 3:
 	print "middle name: " + advisorMiddleName
 
 # finds the advisor's email
-expressionObject = re.compile('Delivered-To: (.*)')
+expressionObject = re.compile('To: (.*)')
 matchObject = expressionObject.search(inputVar)
 nameLine = matchObject.group(1)
 print "advisor email: " + nameLine
@@ -282,7 +285,17 @@ if emailType == 'confirmed':
 			rows = cur.fetchone()
 			studentId = rows[0]
 			print "student ID: " + str(studentId)
-		cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
+
+		# Check to see if appointment already exists before adding it:
+		print "checking to see if appointment exists"
+		cur.execute("SELECT date_time_end FROM appointment WHERE date_time_end = " + "'" + endDateString +"'")
+		rows = cur.fetchone()
+		print "result of query " + rows[0] + "end date is " + endDateString
+
+		if (rows[0] != endDateString):
+			cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
+		else:
+			print "There already is an existing appointment on the books!"
 
 if emailType == 'CANCELLED':
 	with con:
@@ -300,3 +313,44 @@ if emailType == 'CANCELLED':
 
 		else:
 			print "No appointment in database!"
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Purpose: Sends an iCal Email
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# if emailType == 'confirmed':
+# 	# Declare variables
+# 	print "username is" + emailusername
+# 	print "password is" + emailpassword
+# 	print "advisor email is" + advisorEmail
+# 	from_addr = emailusername
+# 	to_addr = advisorEmail
+# 	server = 'smtp.gmail.com'
+# 	server_port = 587
+# 	email_pwd = emailpassword # TODO: Move this to config.py module
+
+# 	email_subj = " test "
+# 	# email_subj = "Advising Signup with " + advisorLastName +" , " + " " + advisorLastName " confirmed for "
+# 	email_body = ("Advising Signup with McGrath, D Kevin confirmed\n"
+# 	              "Name: REDACTED\n"
+# 	              "Email: REDACTED@oregonstate.edu\n"
+# 	              "Date: Wednesday, November 21st, 2012\n"
+# 	              "Time: 1:00pm - 1:15pm\n"
+# 	             )
+# 	# start_dtim = "20160315T153000Z"
+# 	# end_dtim = "20160315T160000Z"
+# 	start_dtim = "20160315T153000"
+# 	end_dtim = "20160315T160000"
+# 	student_email = "marvenm@oregonstate.edu"
+
+# 	# Create CalAppt object
+
+# 	test1 = CalAppt(from_addr, to_addr, server, server_port, email_pwd)
+
+# 	# Send Calendar appt
+
+# 	test1.sendAppt(email_subj, email_body, start_dtim, end_dtim, student_email)
+
+# 	# Print confirmation
+
+# 	print "Email sucesfully sent."
