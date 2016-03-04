@@ -1,14 +1,19 @@
 import sys
+from credentials import *
 import re
 import datetime
 import sqlite3 as lite
+from appt_email import CalAppt
+
+UTCconversiontime = 8
 
 print("Starting python script")
+
 # fileStream = open("pythoncreatedfile", 'w')
 
 # fileStream.write('swag \n')
 # for line in sys.stdin:
-	# fileStream.write (line),
+# 	fileStream.write (line),
 
 # Stores input into a variable
 inputVar = sys.stdin.read()
@@ -45,7 +50,7 @@ if len(nameList) == 2:
 	# print "found two names"
 	advisorFirstName = nameList[1]
 	advisorLastName = nameList[0]
-	advisorMiddleName = None
+	advisorMiddleName = ""
 elif len(nameList) == 3:
 	# print "found three names"
 	advisorFirstName = nameList[2]
@@ -63,7 +68,7 @@ if len(nameList) == 3:
 	print "middle name: " + advisorMiddleName
 
 # finds the advisor's email
-expressionObject = re.compile('Delivered-To: (.*)')
+expressionObject = re.compile('To: (.*)')
 matchObject = expressionObject.search(inputVar)
 nameLine = matchObject.group(1)
 print "advisor email: " + nameLine
@@ -93,7 +98,7 @@ print "name length is " + str(len(nameList))
 if len(nameList) == 2:
 	appointeeFirstName = nameList[1]
 	appointeeLastName = nameList[0]
-	appointeeMiddleName = None
+	appointeeMiddleName = ""
 elif len(nameList) == 3:
 	appointeeFirstName = nameList[2]
 	appointeeLastName = nameList[0]
@@ -127,6 +132,7 @@ expressionObject = re.compile('\W+')
 nameLine = matchObject.group(1)
 dateList = expressionObject.split(nameLine)
 
+dateString = nameLine
 # print dateList
 month = dateList[1]
 year = dateList[3]
@@ -231,7 +237,44 @@ endDate = datetime.datetime.strptime(endDateString, "%H %M %d %B %Y")
 
 startDateString = startDate.strftime('%H %M %d %B %Y')
 endDateString = endDate.strftime('%H %M %d %B %Y')
-print startDate.strftime('%H %M %d %B %Y')
+# print startDate.strftime('%H %M %d %B %Y')
+
+# Convert time into iCal format for start time
+startHour = startDate.strftime('%H')
+print "start hour is " + startHour
+# convert to UTC by adding 8
+startHour = str((UTCconversiontime + int(startHour))%24)
+# turn a single hour digit into a double digit time
+if len(startHour) == 1:
+	startHour = "0" + startHour
+print "converted start hour is " + startHour
+# get minutes
+startMinuteString = startDate.strftime ('%M')
+print "Start Minute " + startMinuteString
+# Get year/month/day
+startYMD = startDate.strftime('%Y%m%d')
+print "start Date" + startDateString
+
+
+# Convert time into ical format for end time
+endHour = endDate.strftime('%H')
+print "end hour is " + endHour
+# convert to UTC by adding 8
+endHour = str((UTCconversiontime + int(endHour))%24)
+if len(endHour) == 1:
+	endHour = "0" + endHour
+print "converted end hour is " + endHour
+# Get minutes
+endMinuteString = endDate.strftime ('%M')
+print "End Minute " + endMinuteString
+# Get year/month/day
+endYMD = endDate.strftime('%Y%m%d')
+print "End Date" + endDateString
+
+startDateString = startYMD+"T"+startHour+ startMinuteString +"00Z"
+endDateString = endYMD+"T"+str(endHour)+ endMinuteString +"00Z"
+print "Start: " + startDateString + "\nEnd: " + endDateString
+
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -282,7 +325,20 @@ if emailType == 'confirmed':
 			rows = cur.fetchone()
 			studentId = rows[0]
 			print "student ID: " + str(studentId)
-		cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
+
+		# Check to see if appointment already exists before adding it:
+		print "checking to see if appointment exists"
+		cur.execute("SELECT date_time_end FROM appointment WHERE date_time_end = " + "'" + endDateString +"'")
+		rows = cur.fetchone()
+		if rows:
+			print "result of query " + rows[0] + "end date is " + endDateString
+			# Double check to make sure that the rows do match
+			if (rows[0] != endDateString):
+				cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
+			else:
+				print "There already is an existing appointment on the books!"
+		else:
+				cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
 
 if emailType == 'CANCELLED':
 	with con:
@@ -300,3 +356,55 @@ if emailType == 'CANCELLED':
 
 		else:
 			print "No appointment in database!"
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Purpose: Sends an iCal Email
+# Inputs: 	emailusername, emailpassword
+# 			advisorEmail, advisorLastName, advisorMiddleName, advisorLastName, appointeeFirstName, appointeeMiddleName, appointeeLastName
+# 			startDateString, endDateString
+# 			appointeeEmail
+# 			dateString
+# Output: 	Sends a MIME email in ical format with the calender information
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+if emailType == 'confirmed':
+	# Declare variables
+	print "username is " + emailusername
+	print "password is " + emailpassword
+	print "advisor email is" + advisorEmail
+	from_addr = emailusername
+	to_addr = advisorEmail
+	server = 'smtp.gmail.com'
+	server_port = 587
+	email_pwd = emailpassword # TODO: Move this to config.py module
+
+	# email_subj = " test "
+	email_subj = "Advising Signup with " + advisorLastName + ", " + advisorMiddleName + " " + advisorLastName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
+
+	print email_subj
+
+	# find the unmodified time for the email
+	expressionObject = re.compile('Time:\s+(.*)')
+	matchObject = expressionObject.search(inputVar)	
+	unmodifiedTime = matchObject.group(1)
+
+	email_body = ("Advising Signup with McGrath, D Kevin confirmed\n"
+	              "Name: " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName + "\n"
+	              "Email: " + appointeeEmail + "\n"
+	              "Date: " + dateString + "\n"
+	              "Time: "+ unmodifiedTime + "\n"
+	             )
+
+	print email_body
+
+	student_email = appointeeEmail
+	# Create CalAppt object
+
+	test1 = CalAppt(from_addr, to_addr, server, server_port, email_pwd)
+
+	# Send Calendar appt
+
+	test1.sendAppt(email_subj, email_body, startDateString, endDateString, student_email)
+
+	# Print confirmation
+
+	print "Email sucesfully sent."

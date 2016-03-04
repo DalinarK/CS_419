@@ -1,0 +1,83 @@
+From vagrant  Fri Mar  4 19:53:40 2016
+Delivered-To: weaselmuncher@gmail.com
+Received: from pc-in-f109.1e100.net [74.125.28.109]
+	by precise32 with POP3 (fetchmail-6.3.21)
+	for <vagrant@localhost> (single-drop); Fri, 04 Mar 2016 19:53:40 +0000 (UTC)
+Received: by 10.202.235.8 with SMTP id j8csp79200oih;
+        Fri, 4 Mar 2016 11:53:16 -0800 (PST)
+X-Received: by 10.37.11.138 with SMTP id 132mr4617904ybl.0.1457121196012;
+        Fri, 04 Mar 2016 11:53:16 -0800 (PST)
+Return-Path: <gophermuncher@gmail.com>
+Received: from mail-yw0-x233.google.com (mail-yw0-x233.google.com. [2607:f8b0:4002:c05::233])
+        by mx.google.com with ESMTPS id a188si1485799ybc.98.2016.03.04.11.53.15
+        for <weaselmuncher@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 04 Mar 2016 11:53:15 -0800 (PST)
+Received-SPF: pass (google.com: domain of gophermuncher@gmail.com designates 2607:f8b0:4002:c05::233 as permitted sender) client-ip=2607:f8b0:4002:c05::233;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of gophermuncher@gmail.com designates 2607:f8b0:4002:c05::233 as permitted sender) smtp.mailfrom=gophermuncher@gmail.com;
+       dkim=pass header.i=@gmail.com;
+       dmarc=pass (p=NONE dis=NONE) header.from=gmail.com
+Received: by mail-yw0-x233.google.com with SMTP id g127so51701624ywf.2
+        for <weaselmuncher@gmail.com>; Fri, 04 Mar 2016 11:53:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:date:message-id:subject:from:to;
+        bh=FK1RipQI3YiMmWIkQHh3AlozZOEhryBj8sTkHJWG+CU=;
+        b=KBihzU77h/X1wcBDr70KwDmX7Z8JYECTmXdf7eroi++WGz3CKtM5rPq8CBp488j7+a
+         sqGEF60oTE0tRteNIpTjiIV3WABbA6KzYdlnfwv32Fths4osPz5NcnQkJGIxZbBrYFin
+         /azR/ds0G5BfC4KwMkPyh+iIoMyNGMTqJzXuQyKvQJNH1piemCDPiiCfhdiBLZr4UDJa
+         OlREceQP71G4hv5ByiwIBeTidxYNRq4RNojbBo6gHp2WnLaF+MZvXOsYbWsjuy04PZuc
+         zja2VbYjDgB09OrJ05cKpSVK74Yc3hVq+A1uARMgdJPX3gdUR5LNMPJX1p09KvNgKJgJ
+         IjQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=FK1RipQI3YiMmWIkQHh3AlozZOEhryBj8sTkHJWG+CU=;
+        b=L93sHzQifus1R1bFA7+UQbvUFUWe1L2PDBcswZfV5OQ8jMlva4AH+DNeEADVrQfVEO
+         +btRVHDMTFWppKM+UKBOCks8g4jEi8uwWBTSvmzRiV/I++yXl4Kgr46UN4n8e5t5HFYw
+         iiCvWNPSA93+NquzuyrBb+n8uawh9R/1/aK/qRZhZsXXZP1mzRR5peKozxEb2OySrLCg
+         rfFmu0fH3I1VFTGMTL90SSn9KgQ7NzK4YkCNIBvNl/es8/cuovDoDQJuh58x6AKa7LGf
+         AHSpVGe7n8HQSdb35hUObB2sUsgJVP3PgLbpBmAE9FPDS+UFbS8gR86hfv4mDcwqcJ5r
+         7xzA==
+X-Gm-Message-State: AD7BkJKKfIxe7dZgm9atx6Pexx8lx/dtOstojVd7L2mkpd0oKaKh9CiuGwhjLFQU14fYiL85Kj2ApBmg5wmHag==
+MIME-Version: 1.0
+X-Received: by 10.129.71.135 with SMTP id u129mr6219271ywa.162.1457121195853;
+ Fri, 04 Mar 2016 11:53:15 -0800 (PST)
+Received: by 10.37.214.74 with HTTP; Fri, 4 Mar 2016 11:53:15 -0800 (PST)
+Date: Fri, 4 Mar 2016 11:53:15 -0800
+Message-ID: <CAGAzOLZZj8YyZaryw5Qt4etEzucMs94nzGZU-M78Q9BqcKYvRA@mail.gmail.com>
+Subject: Advising Signup with McGrath, D Kevin confirmed for Gaga, Lady
+From: Gopher <gophermuncher@gmail.com>
+To: Rawr@oregonstate.edu, Dustin Dinh <weaselmuncher@gmail.com>
+Content-Type: multipart/alternative; boundary=001a114d7490460d17052d3e771c
+
+--001a114d7490460d17052d3e771c
+Content-Type: text/plain; charset=UTF-8
+
+Advising Signup with McGrath, D Kevin confirmed
+Name: Lady Gaga
+Email: Rawr@oregonstate.edu
+Date: Wednesday, November 21st, 2012
+Time:  1:00pm - 1:15pm
+Please contact support@engr.oregonstate.edu if you experience problems
+
+--001a114d7490460d17052d3e771c
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><span style=3D"font-size:12.8px">Advising Signup with McGr=
+ath, D Kevin confirmed</span><br style=3D"font-size:12.8px"><span style=3D"=
+font-size:12.8px">Name: Lady Gaga</span><br style=3D"font-size:12.8px"><spa=
+n style=3D"font-size:12.8px">Email:=C2=A0</span><a href=3D"mailto:Rawr@oreg=
+onstate.edu" target=3D"_blank" style=3D"font-size:12.8px">Rawr@oregonstate.=
+edu</a><br style=3D"font-size:12.8px"><span style=3D"font-size:12.8px">Date=
+: Wednesday, November 21st, 2012</span><br style=3D"font-size:12.8px"><span=
+ style=3D"font-size:12.8px">Time:=C2=A0 1:00pm - 1:15pm</span><br style=3D"=
+font-size:12.8px"><span style=3D"font-size:12.8px">Please contact=C2=A0</sp=
+an><a href=3D"mailto:support@engr.oregonstate.edu" target=3D"_blank" style=
+=3D"font-size:12.8px">support@engr.oregonstate.edu</a><span style=3D"font-s=
+ize:12.8px">=C2=A0if you experience problems</span><br></div>
+
+--001a114d7490460d17052d3e771c--
+

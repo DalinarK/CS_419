@@ -16,14 +16,14 @@
 from appt_email import EmailMsg
 
 # Declare variables
-from_addr = "EMAIL ADDRESS"
-to_addr = "EMAIL ADDRESS"
+from_addr = "weaselmuncher@gmail.com"
+to_addr = 'weaselmuncher@gmail.com'
 server = 'smtp.gmail.com'
 server_port = 587
-email_pwd = "EMAIL PASSWORD" # TODO: Move this to config.py module
+email_pwd = "CS419password" # TODO: Move this to config.py module
 
-email_subj = "Test of new Python script for sending email"
-email_body = "This is a new test"
+email_subj = "Advising Signup with McGrath, D Kevin confirmed for Gaga, Lady"
+email_body = "Advising Signup with McGrath, D Kevin confirmed \nName: Lady Gaga\nEmail: Rawr@oregonstate.edu\nDate: Wednesday, April 21st, 2016\nTime:  1:00pm - 1:15pm \nPlease contact support@engr.oregonstate.edu if you experience problems "
 
 # Create EmailMsg object
 
