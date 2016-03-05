@@ -5,7 +5,7 @@ import datetime
 import sqlite3 as lite
 from appt_email import CalAppt
 
-UTCconversiontime = 8
+UTCconversiontime = 7
 
 print("Starting python script")
 
@@ -169,7 +169,7 @@ if result is not None:
 		expressionObject = re.compile('\d*')
 		matchObject =expressionObject.search(startTime)
 		startHour = matchObject.group()
-		startHour = int(startHour) + 12
+		startHour = (int(startHour) + 12)%24
 		startHour = str(startHour)
 
 # Check to see if the time is in AM and remove it
@@ -206,7 +206,7 @@ if result is not None:
 		expressionObject = re.compile('\d*')
 		matchObject =expressionObject.search(endTime)
 		endHour = matchObject.group()
-		endHour = int(endHour) + 12
+		endHour = (int(endHour) + 12)%24
 		endHour = str(endHour)
 # Check to see if the time is in AM and remove it
 expressionObject = re.compile('am')
@@ -243,7 +243,7 @@ endDateString = endDate.strftime('%H %M %d %B %Y')
 startHour = startDate.strftime('%H')
 print "start hour is " + startHour
 # convert to UTC by adding 8
-startHour = str((UTCconversiontime + int(startHour))%24)
+# startHour = str((UTCconversiontime + int(startHour))%24)
 # turn a single hour digit into a double digit time
 if len(startHour) == 1:
 	startHour = "0" + startHour
@@ -257,10 +257,6 @@ print "start Date" + startDateString
 
 
 # Convert time into ical format for end time
-endHour = endDate.strftime('%H')
-print "end hour is " + endHour
-# convert to UTC by adding 8
-endHour = str((UTCconversiontime + int(endHour))%24)
 if len(endHour) == 1:
 	endHour = "0" + endHour
 print "converted end hour is " + endHour
@@ -270,9 +266,25 @@ print "End Minute " + endMinuteString
 # Get year/month/day
 endYMD = endDate.strftime('%Y%m%d')
 print "End Date" + endDateString
+endHour = endDate.strftime('%H')
+print "end hour is " + endHour
+# convert to UTC by adding 8
+# endHour = (UTCconversiontime + int(endHour))
+# if endHour >= 24:
+# 	endHour = endHour%24
+# 	expressionObject = re.compile('\w\w\w\w\w\w(\w+)')
+# 	matchObject = expressionObject.search(endYMD)	
+# 	endDaySearch = matchObject.group(1)
+# 	print "End day search is: " + endDaySearch
+# 	newDay = str(int(endDaySearch) + 1) 
+# 	print "New day is: " + newDay
+# 	expressionObject = re.compile('\w\w\w\w\w\w(\w+)')
+# 	expressionObject.sub("00", endYMD)
+# 	print "new date is: "+ endYMD
+# endHour = str(endHour)
 
-startDateString = startYMD+"T"+startHour+ startMinuteString +"00Z"
-endDateString = endYMD+"T"+str(endHour)+ endMinuteString +"00Z"
+startDateString = startYMD+"T"+startHour+ startMinuteString +"00"
+endDateString = endYMD+"T"+str(endHour)+ endMinuteString +"00"
 print "Start: " + startDateString + "\nEnd: " + endDateString
 
 
@@ -395,6 +407,7 @@ if emailType == 'confirmed':
 	             )
 
 	print email_body
+	print "Start: " + startDateString + " End: " + endDateString
 
 	student_email = appointeeEmail
 	# Create CalAppt object

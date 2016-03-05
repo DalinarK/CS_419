@@ -20,7 +20,7 @@ from_addr = "weaselmuncher@gmail.com"
 to_addr = 'weaselmuncher@gmail.com'
 server = 'smtp.gmail.com'
 server_port = 587
-email_pwd = "CS419password" # TODO: Move this to config.py module
+email_pwd = "419FinalProject" # TODO: Move this to config.py module
 
 email_subj = "Advising Signup with McGrath, D Kevin confirmed for Gaga, Lady"
 email_body = "Advising Signup with McGrath, D Kevin confirmed \nName: Lady Gaga\nEmail: Rawr@oregonstate.edu\nDate: Wednesday, April 21st, 2016\nTime:  1:00pm - 1:15pm \nPlease contact support@engr.oregonstate.edu if you experience problems "
