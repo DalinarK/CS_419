@@ -289,8 +289,14 @@ class CalAppt(EmailMsg):
         
         # Send email
         text = msg.as_string()
-        server.sendmail(self.fromaddr, self.toaddr, text)
-        server.quit()
+        try:
+            server.sendmail(self.fromaddr, self.toaddr, text)
+            return True
+        except:
+            print "Error sending email."
+            return False
+        finally:
+            server.quit()
         
         
     
