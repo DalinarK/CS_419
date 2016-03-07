@@ -18,6 +18,8 @@
 # YouTube video tutorials on UniCurses.
 
 
+import os
+import sys
 from functions import *
 from curses import *
 
@@ -37,6 +39,11 @@ def main(stdscr):
         'end': 0,               # end of "window" of appts to show
         'n_items': 0            # number of items in appt list
         }
+
+
+    # Redirect stderr to /dev/null (we don't want to see it in the UI)
+    bitbucket = open(os.devnull, 'w')
+    sys.stderr = bitbucket
 
 
     ##############################################
