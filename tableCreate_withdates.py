@@ -22,6 +22,8 @@ students = (
     ('Suki', '', 'Sherwood', 'suki@canyonjam.net'),
 )
 
+# Time format: YYYY-MM-DD HH:MM:SS
+# This format is required by SQLite. YYYYMMDDTHHMMSSZ won't work.
 appointments = (
     (1, 2, '2016-02-28 13:20:00', '2016-02-28 13:40:00'),
     (2, 1, '2016-02-28 13:40:00', '2016-02-28 14:00:00'),
