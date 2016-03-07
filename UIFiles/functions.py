@@ -17,6 +17,7 @@ import time
 import sqlite3 as lite
 from curses import *
 import os.path
+from appt_email import CalAppt
 
 
 # Selected calendar day
@@ -261,15 +262,44 @@ def process_appt(max_y, max_x, menu_items, choice):
         # OPERATION: CONFIRM
         # If user hits y or Y (ASCII code 89 or 121)...
         if c == 89 or c == 121:
-            success = delete_appt(menu_items, choice)
+            success = delete_appt(max_y, max_x, menu_items, choice)
             if success:
                 deciding = False
             else:
-                # For now, report the appointment ID as not deleted
-                msg = "ERROR: Could not delete appt ID \"" + menu_items[choice][0] + "\""
-                print_cnf(cnf_win, msg)
+                # Clear out the confirmation window and outline
+                cnf_win.erase()
+                popup_outline_win.erase()
 
-        # OPERATION: QUIT THE CALENDAR
+                # A general error message re: sending cancellation email 
+                msg = "An error occurred when emailing the cancellation."
+
+                # Display the error popup
+                err_title = " Cancellation Error "
+                help_str = " [q = quit] "
+                popup_outline_win = gen_popup_outline_window(max_y, max_x, 5, len(msg)+6, err_title, help_str)
+                popup_outline_win.refresh()
+
+                # Build the error message content window (contains the msg)
+                err_win = newwin(2, len(msg), max_y/2, (max_x/2 - len(msg)/2))
+                err_win.keypad(True)  
+
+                # Print error 
+                print_cnf(err_win, msg)
+
+                deciding = True
+                while(deciding):
+                    # Read keyboard input from the confirmation window
+                    c = err_win.getch()
+
+                    # OPERATION: QUIT THE ERROR POPUP
+                    # If user hits q or Q (ASCII code 81 or 113) or ESC (ASCII code 27)...
+                    if c == 81 or c == 113 or c == 27:
+                        deciding = False
+
+                #msg = "ERROR: Could not delete appt ID \"" + str(menu_items[choice][0]) + "\""
+                #print_cnf(cnf_win, msg)
+
+        # OPERATION: QUIT THE CONFIRMATION
         # If user hits q or Q (ASCII code 81 or 113) or ESC (ASCII code 27)...
         elif c == 81 or c == 113 or c == 27:
             deciding = False
@@ -297,30 +327,69 @@ def print_cnf(cnf_win, msg):
 # Delete an appointment
 ################################################
 
-def delete_appt(menu_items, choice):
+# The menu_items[] list should contain the following:
+#
+#   [0] appointment ID in the DB
+#   [1] ISO datetime of appt start time (YYYY-MM-DD HH:MM:SS)
+#   [2] ISO datetime of appt end time (YYYY-MM-DD HH:MM:SS)
+#   [3] student full name
+#   [4] student email
 
+def delete_appt(max_y, max_x, menu_items, choice):
+
+    # Change to true if this function does everything it needs to do
     success = False
-    emailed = False
 
     # Open the database
     con = db_connect()
 
+    # Parse start and end datetime structs from the date strings
+    ts = time.strptime(str(menu_items[choice][1]), '%Y-%m-%d %H:%M:%S')
+    te = time.strptime(str(menu_items[choice][2]), '%Y-%m-%d %H:%M:%S')
 
-    # TODO: ADD CODE TO SEND CALENDAR EMAIL HERE.
-    #
-    # The menu_items[] list should contain the following:
-    #
-    #   [0] appointment ID in the DB
-    #   [1] ISO datetime of appt start time (YYYY-MM-DD HH:MM:SS)
-    #   [2] ISO datetime of appt end time (YYYY-MM-DD HH:MM:SS)
-    #   [3] student full name
-    #   [4] student email
-    #
-    # Change the truth value of 'emailed' to True if the email 
-    # sends w/o errors.
-    emailed = True
+    # Make start and end datetime objects from datetime struct data
+    appt_sdt = datetime.datetime(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec)
+    appt_edt = datetime.datetime(te.tm_year, te.tm_mon, te.tm_mday, te.tm_hour, te.tm_min, te.tm_sec)
 
+    # Build ISO date strings (used by iCalendar) from datetime struct
+    # data. Format: YYYYMMDDTHHMMSSZ
+    iso_start = str(ts.tm_year) + str(ts.tm_mon) + str(ts.tm_mday) + "T" + \
+                str(ts.tm_hour) + str(ts.tm_min) + str(ts.tm_sec) + "Z"
+    iso_end   = str(te.tm_year) + str(te.tm_mon) + str(te.tm_mday) + "T" + \
+                str(te.tm_hour) + str(te.tm_min) + str(te.tm_sec) + "Z"
 
+    # Build appointment date and start/end time strings from datetime objects
+    appt_date  = appt_sdt.strftime("%A, %B %-d, %Y")
+    appt_stime = appt_sdt.strftime("%-I:%M%p")
+    appt_etime = appt_edt.strftime("%-I:%M%p")
+
+    # Declare variables
+    # TODO: Grab CAPITALIZED VALUES from a shared config file!
+    from_addr = "FROM_ADDR"
+    to_addr = "TO_ADDR"
+    server = 'smtp.gmail.com'
+    server_port = 587
+    email_pwd = "FROM_PASS" # TODO: Move this to config.py module
+    
+    email_subj = "Advising Signup Cancellation"
+    email_body = ("Advising Signup CANCELLED\n"
+                  "Name: "  + menu_items[choice][3] + "\n"
+                  "Email: " + menu_items[choice][4] + "\n"
+                  "Date: "  + appt_date + "\n"
+                  "Time: "  + appt_stime + " - " + appt_etime
+                 )
+    appointment_id = str(menu_items[choice][0])
+    start_dtim = iso_start
+    end_dtim = iso_end
+    student_email = menu_items[choice][4]
+    
+    # Create CalAppt object
+    cncl_mail = CalAppt(from_addr, to_addr, server, server_port, email_pwd)
+    
+    # Send Calendar appt. If no exceptions were encountered during the
+    # sending of the email, 'emailed' will be set to True.
+    emailed = cncl_mail.sendCncl(email_subj, email_body, appointment_id, start_dtim, end_dtim, student_email)
+    
     if emailed:
         # Delete the item from the database
         con.execute("DELETE FROM appointment WHERE id=?", (menu_items[choice][0],))
