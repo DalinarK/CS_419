@@ -77,7 +77,8 @@ class EmailMsg(object):
             server.starttls()
             server.login(self.fromaddr, self.pwd)
         except: 
-            print "Error connecting to server:", sys.exc_info()[0]
+            err_str = "Error connecting to server: " +  str(sys.exc_info()[0])
+            sys.stderr.write(err_str)
         
         # Send email
         text = msg.as_string()
@@ -190,7 +191,8 @@ class CalAppt(EmailMsg):
             server.starttls()
             server.login(self.fromaddr, self.pwd)
         except: 
-            print "Error connecting to server:", sys.exc_info()[0]
+            err_str = "Error connecting to server: " +  str(sys.exc_info()[0])
+            sys.stderr.write(err_str)
         
         # Send email
         text = msg.as_string()
@@ -285,7 +287,8 @@ class CalAppt(EmailMsg):
             server.starttls()
             server.login(self.fromaddr, self.pwd)
         except: 
-            print "Error connecting to server:", sys.exc_info()[0]
+            err_str = "Error connecting to server: " +  str(sys.exc_info()[0])
+            sys.stderr.write(err_str)
         
         # Send email
         text = msg.as_string()
@@ -293,7 +296,8 @@ class CalAppt(EmailMsg):
             server.sendmail(self.fromaddr, self.toaddr, text)
             return True
         except:
-            print "Error sending email."
+            err_str = "Error sending email."
+            sys.stderr.write(err_str)
             return False
         finally:
             server.quit()
