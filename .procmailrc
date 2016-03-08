@@ -7,16 +7,11 @@ LOGFILE=$HOME/.procmaillog    # Keep a log for troubleshooting.
 :0
 *Subject: Advising signup
 {
-:0Wc
+:0
 | /usr/bin/python /vagrant/parse.py	
-
-:0c
-| cat >> whynotworking
-
-:0c
-$DEFAULT
 }
-
 :0:
-unwanted
+$DEFAULT
+
+
 

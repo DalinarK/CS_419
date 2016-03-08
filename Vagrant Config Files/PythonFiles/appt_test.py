@@ -16,8 +16,8 @@
 from appt_email import CalAppt
 
 # Declare variables
-from_addr = "CS419Appt@gmail.com"
-to_addr = "CS419Appt@gmail.com"
+from_addr = "cs419appt@gmail.com"
+to_addr = "cs419appt@gmail.com"
 server = 'smtp.gmail.com'
 server_port = 587
 email_pwd = "CS419ApptFinal" # TODO: Move this to config.py module
@@ -29,16 +29,11 @@ email_body = ("Advising Signup with McGrath, D Kevin confirmed\n"
               "Date: Wednesday, November 21st, 2012\n"
               "Time: 1:00pm - 1:15pm\n"
              )
-<<<<<<< HEAD
+
 appointment_id = "324"
 start_dtim = "20160316T153000Z"
 end_dtim = "20160316T160000Z"
-=======
-start_dtim = "20160315T223000Z"
-end_dtim = "20160315T230000Z"
-# start_dtim = "20160315T153000"
-# end_dtim = "20160315T160000"
->>>>>>> 2604ff74784e09c8aec5ba363ab6f276d255c8ee
+
 student_email = "marvenm@oregonstate.edu"
 
 # Create CalAppt object

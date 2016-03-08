@@ -13,3 +13,7 @@ Created a symbolic link from /vagrant/ to /home/vagrant
 When doing cat >> testfile. The output goes to /home/vagrant/Mail
 Flip doesn’t allow sql queries from server. Need to figure out an alternate implementation.
 Either send query to an EC2 instance. Run query from linux box. Or run sqllite?
+
+To connect to the db type "sqlite3 [nameofdb.db]" in the folder the database is stored
+
+Apparantly working on this in sublime adds random characters at the end of .procmailrc and other rc files and makes them now work. So I have to edit them in VI on flip!

@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0, '../../../vagrant/PythonFiles/')
 from credentials import *
 import re
 import datetime
@@ -268,20 +269,6 @@ endYMD = endDate.strftime('%Y%m%d')
 print "End Date" + endDateString
 endHour = endDate.strftime('%H')
 print "end hour is " + endHour
-# convert to UTC by adding 8
-# endHour = (UTCconversiontime + int(endHour))
-# if endHour >= 24:
-# 	endHour = endHour%24
-# 	expressionObject = re.compile('\w\w\w\w\w\w(\w+)')
-# 	matchObject = expressionObject.search(endYMD)	
-# 	endDaySearch = matchObject.group(1)
-# 	print "End day search is: " + endDaySearch
-# 	newDay = str(int(endDaySearch) + 1) 
-# 	print "New day is: " + newDay
-# 	expressionObject = re.compile('\w\w\w\w\w\w(\w+)')
-# 	expressionObject.sub("00", endYMD)
-# 	print "new date is: "+ endYMD
-# endHour = str(endHour)
 
 startDateString = startYMD+"T"+startHour+ startMinuteString +"00"
 endDateString = endYMD+"T"+str(endHour)+ endMinuteString +"00"
@@ -294,9 +281,9 @@ print "Start: " + startDateString + "\nEnd: " + endDateString
 # If not, they will be added to the student and appointment tables. 
 # It will then add or remove an appointment based on the emailType variable.
 # Uses variables: advisorFirstName, advisorLastName, advisorMiddleName, appointeeFirstName, 
-# appointeeLastName, appointeeMiddleName, startDate, endDate 
+# appointeeLastName, appointeeMiddleName, startDate, endDate, insertionID
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-con = lite.connect('appt.db')
+con = lite.connect('../../../vagrant/appt.db')
 
 if emailType == 'confirmed':
 	print "Adding Appointment"
@@ -350,27 +337,46 @@ if emailType == 'confirmed':
 			else:
 				print "There already is an existing appointment on the books!"
 		else:
-				cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
+			cur.execute("INSERT INTO appointment (fk_advisor_id, fk_student_id, date_time_start, date_time_end) VALUES (?, ?, ?, ?)", (advisorId, studentId, startDateString, endDateString))
+
+		print "the id of the just inserted row is " + str(cur.lastrowid)
+		insertionID = cur.lastrowid
 
 if emailType == 'CANCELLED':
 	with con:
+		sendCancelEmail = "false";
 		cur = con.cursor() 
 		cur.execute("PRAGMA foreign_keys = 1")
 
 		print "Removing Appointments"
-		cur.execute("SELECT id, date_time_start, date_time_end FROM appointment WHERE date_time_start = " + "'" + startDateString +"'")
+		cur.execute("SELECT id, fk_student_id, date_time_start, date_time_end FROM appointment WHERE date_time_start = " + "'" + startDateString +"'")
 		rows = cur.fetchone()
 
+		# Make sure that there is an appointment with the right time
 		if rows:
+			# Make sure that the student cancelling the appointment is the actual student is correct
 			appointmentID = rows[0]
-			print "Removing id " + str(appointmentID)
-			cur.execute("DELETE FROM appointment WHERE id = " + "'" + str(appointmentID) + "'")
+			studentForeignKey = rows[1]
+			print "Student foreign key is " + studentForeignKey
+			cur.execute("SELECT email_address FROM student WHERE student_id = " + "'" + studentForeignKey +"'")
+			rows2 = cur.fetchone()
+			actualEmail = rows2[0]
+			print "requesting student " + appointeeEmail 
+			print " vs actual email " + actualEmail
+			if appointeeEmail == actualEmail:
+				print "canelling email"
+				cur.execute("DELETE FROM appointment WHERE id = " + "'" + str(appointmentID) + "'")
+				sendCancelEmail = "true"
+			else:
+				print "emails did not match! Appointment cancellation will not proceed"	
+			
 
 		else:
 			print "No appointment in database!"
 
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# Purpose: Sends an iCal Email
+# Purpose: Sends an iCal Email that either notifies the user of an appointment or cancellation of appointment
 # Inputs: 	emailusername, emailpassword
 # 			advisorEmail, advisorLastName, advisorMiddleName, advisorLastName, appointeeFirstName, appointeeMiddleName, appointeeLastName
 # 			startDateString, endDateString
@@ -378,7 +384,7 @@ if emailType == 'CANCELLED':
 # 			dateString
 # Output: 	Sends a MIME email in ical format with the calender information
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-if emailType == 'confirmed':
+if emailType == 'confirmed' and insertionID is not None:
 	# Declare variables
 	print "username is " + emailusername
 	print "password is " + emailpassword
@@ -390,7 +396,7 @@ if emailType == 'confirmed':
 	email_pwd = emailpassword # TODO: Move this to config.py module
 
 	# email_subj = " test "
-	email_subj = "Advising Signup with " + advisorLastName + ", " + advisorMiddleName + " " + advisorLastName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
+	email_subj = "Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorLastName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
 
 	print email_subj
 
@@ -399,15 +405,15 @@ if emailType == 'confirmed':
 	matchObject = expressionObject.search(inputVar)	
 	unmodifiedTime = matchObject.group(1)
 
-	email_body = ("Advising Signup with McGrath, D Kevin confirmed\n"
+	email_body = ("Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName+ " confirmed\n"
 	              "Name: " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName + "\n"
 	              "Email: " + appointeeEmail + "\n"
 	              "Date: " + dateString + "\n"
-	              "Time: "+ unmodifiedTime + "\n"
+	              "Time: "+ unmodifiedTime + "\n\n\n"
+  	              "Please contact support@engr.oregonstate.edu if you experience problems\n"
 	             )
 
 	print email_body
-	print "Start: " + startDateString + " End: " + endDateString
 
 	student_email = appointeeEmail
 	# Create CalAppt object
@@ -416,8 +422,52 @@ if emailType == 'confirmed':
 
 	# Send Calendar appt
 
-	test1.sendAppt(email_subj, email_body, startDateString, endDateString, student_email)
+	test1.sendAppt(email_subj, email_body, str(insertionID), startDateString, endDateString, student_email)
 
 	# Print confirmation
 
-	print "Email sucesfully sent."
+	print "Appointment Email successfully sent."
+
+if emailType == 'CANCELLED' and sendCancelEmail == 'true':
+	# Declare variables
+	print "username is " + emailusername
+	print "password is " + emailpassword
+	print "advisor email is" + advisorEmail
+	from_addr = emailusername
+	to_addr = advisorEmail
+	server = 'smtp.gmail.com'
+	server_port = 587
+	email_pwd = emailpassword # TODO: Move this to config.py module
+
+	# email_subj = " test "
+	email_subj = "Advising Appointment CANCELLED"
+
+	print email_subj
+
+	# find the unmodified time for the email
+	expressionObject = re.compile('Time:\s+(.*)')
+	matchObject = expressionObject.search(inputVar)	
+	unmodifiedTime = matchObject.group(1)
+
+	email_body = ("Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName+ " CANCELLED\n"
+	              "Name: " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName + "\n"
+	              "Email: " + appointeeEmail + "\n"
+	              "Date: " + dateString + "\n"
+	              "Time: "+ unmodifiedTime + "\n\n\n"
+	              "Please contact support@engr.oregonstate.edu if you experience problems\n"
+	             )
+
+	print email_body
+
+	student_email = appointeeEmail
+	# Create CalAppt object
+
+	test1 = CalAppt(from_addr, to_addr, server, server_port, email_pwd)
+
+	# Send Calendar appt
+
+	test1.sendCncl(email_subj, email_body, str(appointmentID), startDateString, endDateString, student_email)
+
+	# Print confirmation
+
+	print "Appointment Cancellation successfully sent to" + advisorEmail
