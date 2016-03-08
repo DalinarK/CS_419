@@ -16,11 +16,11 @@
 from appt_email import CalAppt
 
 # Declare variables
-from_addr = "weaselmuncher@gmail.com"
-to_addr = "weaselmuncher@gmail.com"
+from_addr = "cs419appt@gmail.com"
+to_addr = "cs419appt@gmail.com"
 server = 'smtp.gmail.com'
 server_port = 587
-email_pwd = "CSFinal419Pass" # TODO: Move this to config.py module
+email_pwd = "CS419ApptFinal" # TODO: Move this to config.py module
 
 email_subj = "Advising Signup with McGrath, D Kevin confirmed for REDACTED"
 email_body = ("Advising Signup with McGrath, D Kevin confirmed\n"
