@@ -13,3 +13,5 @@ Created a symbolic link from /vagrant/ to /home/vagrant
 When doing cat >> testfile. The output goes to /home/vagrant/Mail
 Flip doesn’t allow sql queries from server. Need to figure out an alternate implementation.
 Either send query to an EC2 instance. Run query from linux box. Or run sqllite?
+
+To connect to the db type "sqlite3 [nameofdb.db]" in the folder the database is stored

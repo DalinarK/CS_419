@@ -296,7 +296,7 @@ print "Start: " + startDateString + "\nEnd: " + endDateString
 # Uses variables: advisorFirstName, advisorLastName, advisorMiddleName, appointeeFirstName, 
 # appointeeLastName, appointeeMiddleName, startDate, endDate 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-con = lite.connect('appt.db')
+con = lite.connect('../../../vagrant/appt.db')
 
 if emailType == 'confirmed':
 	print "Adding Appointment"
