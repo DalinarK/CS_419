@@ -13,7 +13,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "hashicorp/precise32"
   # config.vm.provision :shell, path: "bootstrap.sh"
-  config.vm.provision :shell, path: "procmail.sh"
+
+  config.vm.provision "file", source: ".procmailrc", destination: "~/.procmailrc"
+  config.vm.provision "file", source: ".msmtprc", destination: "~/.msmtprc"
+  config.vm.provision "file", source: ".muttrc", destination: "~/.muttrc"
+  config.vm.provision "file", source: ".fetchmailrc", destination: "~/.fetchmailrc"
+  config.vm.provision "file", source: ".bashrc", destination: "~/.bashrc"
+
+  config.vm.provision :shell, path: "install.sh"
   # config.vm.network :forwarded_port, guest: 80, host: 4567
 
   # Disable automatic box update checking. If you disable this, then

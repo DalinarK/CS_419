@@ -18,7 +18,7 @@ print lite.sqlite_version   # should be 3.6.23.1
 # )
 
 
-con = lite.connect('../../../vagrant/appt.db')
+con = lite.connect('appt.db')
 
 with con:
     
