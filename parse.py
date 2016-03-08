@@ -396,7 +396,7 @@ if emailType == 'confirmed' and insertionID is not None:
 	email_pwd = emailpassword # TODO: Move this to config.py module
 
 	# email_subj = " test "
-	email_subj = "Advising Signup with " + advisorLastName + ", " + advisorMiddleName + " " + advisorLastName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
+	email_subj = "Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorLastName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
 
 	print email_subj
 
@@ -405,7 +405,7 @@ if emailType == 'confirmed' and insertionID is not None:
 	matchObject = expressionObject.search(inputVar)	
 	unmodifiedTime = matchObject.group(1)
 
-	email_body = ("Advising Signup with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName+ " confirmed\n"
+	email_body = ("Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName+ " confirmed\n"
 	              "Name: " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName + "\n"
 	              "Email: " + appointeeEmail + "\n"
 	              "Date: " + dateString + "\n"
@@ -440,7 +440,7 @@ if emailType == 'CANCELLED' and sendCancelEmail == 'true':
 	email_pwd = emailpassword # TODO: Move this to config.py module
 
 	# email_subj = " test "
-	email_subj = "Advising Signup CANCELLED"
+	email_subj = "Advising Appointment CANCELLED"
 
 	print email_subj
 
@@ -449,7 +449,7 @@ if emailType == 'CANCELLED' and sendCancelEmail == 'true':
 	matchObject = expressionObject.search(inputVar)	
 	unmodifiedTime = matchObject.group(1)
 
-	email_body = ("Advising Signup with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName+ " CANCELLED\n"
+	email_body = ("Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName+ " CANCELLED\n"
 	              "Name: " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName + "\n"
 	              "Email: " + appointeeEmail + "\n"
 	              "Date: " + dateString + "\n"
@@ -470,4 +470,4 @@ if emailType == 'CANCELLED' and sendCancelEmail == 'true':
 
 	# Print confirmation
 
-	print "Appointment Cancellation successfully sent"
+	print "Appointment Cancellation successfully sent to" + advisorEmail
