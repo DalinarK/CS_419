@@ -1,7 +1,7 @@
 import os.path
 import sys
 #sys.path.insert(0, '../../../vagrant/PythonFiles/')
-sys.path.append(os.path.expanduser('~')) # for ~/.appt/credentials.py
+sys.path.append(os.path.expanduser('~') + '/.appt') # for ~/.appt/credentials.py
 from credentials import *
 import re
 import datetime
