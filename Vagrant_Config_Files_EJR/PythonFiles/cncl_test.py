@@ -13,7 +13,7 @@
 #
 #
 
-from appt_email import CalAppt
+from appt.appt_email import CalAppt
 
 # Declare variables
 from_addr = "EMAIL ADDRESS"

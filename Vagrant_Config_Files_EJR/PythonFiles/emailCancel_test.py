@@ -13,7 +13,7 @@
 #
 #
 
-from appt_email import EmailMsg
+from appt.appt_email import EmailMsg
 
 # Declare variables
 from_addr = "CS419Appt@gmail.com"
