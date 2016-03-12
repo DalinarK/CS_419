@@ -6,7 +6,7 @@ LOGFILE=$HOME/.procmaillog    # Keep a log for troubleshooting.
 # Recipes
 :0:
 * Subject: Advising signup
-| /usr/bin/python /vagrant/parse.py	
+| /usr/bin/python /opt/appt/parse.py	
 
 
 
