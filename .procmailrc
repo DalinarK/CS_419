@@ -2,10 +2,10 @@
 PATH=/bin:/usr/bin:/usr/local/bin 
 VERBOSE=off                   # Turn on for verbose log
 MAILDIR=$HOME/Mail            # Where Procmail recipes deliver
-LOGFILE=$HOME/.procmaillog    # Keep a log for troubleshooting.
+LOGFILE=$HOME/.procmaillog    # Keep a log for troubleshootin
 # Recipes
 :0
-*Subject: Advising signup
+* ^Subject: Advising signup
 {
 :0
 | /usr/bin/python /vagrant/parse.py	
