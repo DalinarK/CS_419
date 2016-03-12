@@ -41,6 +41,8 @@ python /vagrant/tableCreate_withdates.py
 cd ..
 sudo chown --recursive vagrant:vagrant /home/vagrant/.appt
 sudo usermod -a -G staff vagrant
+# Add alias to appt_ui in /etc/profile, don't echo to console
+echo "alias appt_ui=/opt/appt/appt_ui.py" | tee --append /etc/profile > /dev/null
 if ! [ -L /var/www ]; then
   rm -rf /var/www
   ln -fs /vagrant /var/www
