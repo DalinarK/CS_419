@@ -3,6 +3,7 @@ pwd
 pwd
 pwd
 pwd
+python setupConfigs.py
 chmod 0600 ../../../home/vagrant/.msmtprc
 chmod 600 ../../../home/vagrant/.fetchmailrc
 mkdir ../../../../home/vagrant/Mail
@@ -29,6 +30,7 @@ sudo touch "/usr/local/lib/python2.7/dist-packages/appt/__init__.py"
 sudo mkdir -p /opt/appt
 sudo cp /vagrant/UIFiles/appt_ui.py /opt/appt
 sudo cp /vagrant/parse.py /opt/appt
+sudp cp /vagrant/email.py /opt/appt
 sudo chmod +x /opt/appt/appt_ui.py
 mkdir /home/vagrant/.appt
 chmod 700 /home/vagrant/.appt
