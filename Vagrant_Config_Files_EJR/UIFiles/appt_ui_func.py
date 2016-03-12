@@ -17,7 +17,14 @@ import time
 import sqlite3 as lite
 from curses import *
 import os.path
+import sys
 from appt.appt_email import CalAppt
+
+# Read the user's credentials.py 
+home_appt_path = os.path.expanduser('~')
+home_appt_path += '/.appt'
+sys.path.insert(0, home_appt_path)
+import credentials
 
 
 # Selected calendar day
@@ -362,12 +369,11 @@ def delete_appt(max_y, max_x, menu_items, choice):
     appt_etime = appt_edt.strftime("%-I:%M%p")
 
     # Declare variables
-    # TODO: Grab CAPITALIZED VALUES from a shared config file!
-    from_addr = "FROM_ADDR"
-    to_addr = "TO_ADDR"
+    from_addr = credentials.emailusername
+    to_addr = credentials.emailusername
     server = 'smtp.gmail.com'
     server_port = 587
-    email_pwd = "FROM_PASS" # TODO: Move this to config.py module
+    email_pwd = credentials.emailpassword 
     
     email_subj = "Advising Signup Cancellation"
     email_body = ("Advising Signup CANCELLED\n"
