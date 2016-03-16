@@ -410,7 +410,7 @@ if emailType == 'confirmed' and insertionID is not None:
 	email_pwd = emailpassword # TODO: Move this to config.py module
 
 	# email_subj = " test "
-	email_subj = "Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorLastName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
+	email_subj = "Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
 
 	print email_subj
 
