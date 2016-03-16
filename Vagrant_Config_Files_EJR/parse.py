@@ -98,14 +98,14 @@ expressionObject = re.compile('\W+')
 nameList = expressionObject.split(nameLine)
 print "name length is " + str(len(nameList))
 
-if len(nameList) == 2:
+if len(nameList) == 3:
 	appointeeFirstName = nameList[1]
 	appointeeLastName = nameList[0]
 	appointeeMiddleName = ""
-elif len(nameList) == 3:
-	appointeeFirstName = nameList[2]
+elif len(nameList) == 4:
+	appointeeFirstName = nameList[1]
 	appointeeLastName = nameList[0]
-	appointeeMiddleName = nameList[1]
+	appointeeMiddleName = nameList[2]
 # If there are multiple names, only save the last name of the set
 else:
 	print "name length not 3 or 2"
@@ -114,7 +114,7 @@ else:
 
 print "Student first name: " + appointeeFirstName
 print "Student last name: " + appointeeLastName
-if len(nameList) == 3:
+if len(nameList) == 4:
 	print "middle name: " + appointeeMiddleName
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -448,11 +448,11 @@ if emailType == 'CANCELLED' and sendCancelEmail == 'true':
 	print "username is " + emailusername
 	print "password is " + emailpassword
 	print "advisor email is" + advisorEmail
-	from_addr = "oriontest.bugbounty@gmail.com"
+	from_addr = emailusername
 	to_addr = advisorEmail
 	server = 'smtp.gmail.com'
 	server_port = 587
-	email_pwd = "COOLEY01acid73rd01BON" # TODO: Move this to config.py module
+	email_pwd = emailpassword # TODO: Move this to config.py module
 
 	# email_subj = " test "
 	email_subj = "Advising Appointment CANCELLED"
