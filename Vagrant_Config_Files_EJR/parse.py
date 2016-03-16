@@ -403,11 +403,11 @@ if emailType == 'confirmed' and insertionID is not None:
 	print "username is " + emailusername
 	print "password is " + emailpassword
 	print "advisor email is" + advisorEmail
-	from_addr = emailusername
+	from_addr = "oriontest.bugbounty@gmail.com"
 	to_addr = advisorEmail
 	server = 'smtp.gmail.com'
 	server_port = 587
-	email_pwd = emailpassword # TODO: Move this to config.py module
+	email_pwd = "COOLEY01acid73rd01BON" # TODO: Move this to config.py module
 
 	# email_subj = " test "
 	email_subj = "Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
@@ -448,11 +448,11 @@ if emailType == 'CANCELLED' and sendCancelEmail == 'true':
 	print "username is " + emailusername
 	print "password is " + emailpassword
 	print "advisor email is" + advisorEmail
-	from_addr = emailusername
+	from_addr = "oriontest.bugbounty@gmail.com"
 	to_addr = advisorEmail
 	server = 'smtp.gmail.com'
 	server_port = 587
-	email_pwd = emailpassword # TODO: Move this to config.py module
+	email_pwd = "COOLEY01acid73rd01BON" # TODO: Move this to config.py module
 
 	# email_subj = " test "
 	email_subj = "Advising Appointment CANCELLED"
