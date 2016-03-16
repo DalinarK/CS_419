@@ -407,7 +407,7 @@ if emailType == 'confirmed' and insertionID is not None:
 	to_addr = advisorEmail
 	server = 'smtp.gmail.com'
 	server_port = 587
-	email_pwd = "COOLEY01acid73rd01BON" # TODO: Move this to config.py module
+	email_pwd = "COOLEY01acid73rd01BON"  # TODO: Move this to config.py module
 
 	# email_subj = " test "
 	email_subj = "Advising Appointment with " + advisorLastName + ", " + advisorMiddleName + " " + advisorFirstName + " confirmed for " + appointeeLastName + ", " + appointeeMiddleName + " " + appointeeFirstName
@@ -452,7 +452,7 @@ if emailType == 'CANCELLED' and sendCancelEmail == 'true':
 	to_addr = advisorEmail
 	server = 'smtp.gmail.com'
 	server_port = 587
-	email_pwd = "COOLEY01acid73rd01BON" # TODO: Move this to config.py module
+	email_pwd = "COOLEY01acid73rd01BON"  # TODO: Move this to config.py module
 
 	# email_subj = " test "
 	email_subj = "Advising Appointment CANCELLED"
